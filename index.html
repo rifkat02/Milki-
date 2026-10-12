@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мессенджер Макс - Молочные продукты Бижбуляк</title>
+    <title>Макс Доставка - Молочные продукты Бижбуляк</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -88,11 +88,6 @@
                 <i class="fa-solid fa-user text-lg"></i>
                 <span class="text-[11px] md:text-base">Профиль</span>
             </button>
-            <!-- Hidden Admin Button -->
-            <button onclick="switchTab('admin')" id="nav-admin" class="nav-item hidden flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-purple-700 bg-purple-50 font-bold w-full">
-                <i class="fa-solid fa-user-shield text-lg"></i>
-                <span class="text-[11px] md:text-base">Админка</span>
-            </button>
         </nav>
 
         <!-- Sidebar Info Footer (Desktop) -->
@@ -125,7 +120,52 @@
                         <i class="fa-solid fa-whiskey-glass text-blue-600"></i> Свежая продукция
                     </h3>
                     <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Products injected by JS -->
+                        <!-- Products dynamically loaded -->
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="h-32 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-3xl mb-3">
+                                    <i class="fa-solid fa-bottle-droplet"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-800">Молоко деревенское 1.5л</h4>
+                                <p class="text-xs text-slate-500 mt-1">Свежее натуральное молоко из личного подсобного хозяйства.</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="font-black text-blue-600 text-lg">120 ₽</span>
+                                <button onclick="addToCart('Молоко деревенское 1.5л', 120)" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95">
+                                    В корзину
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="h-32 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 text-3xl mb-3">
+                                    <i class="fa-solid fa-jar"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-800">Сметана домашняя 0.5л</h4>
+                                <p class="text-xs text-slate-500 mt-1">Густая натуральная сметана высокой жирности.</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="font-black text-blue-600 text-lg">180 ₽</span>
+                                <button onclick="addToCart('Сметана домашняя 0.5л', 180)" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95">
+                                    В корзину
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="h-32 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 text-3xl mb-3">
+                                    <i class="fa-solid fa-cheese"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-800">Творог деревенский 400г</h4>
+                                <p class="text-xs text-slate-500 mt-1">Рассыпчатый и нежный творог.</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="font-black text-blue-600 text-lg">160 ₽</span>
+                                <button onclick="addToCart('Творог деревенский 400г', 160)" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95">
+                                    В корзину
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -135,7 +175,7 @@
                 <div class="flex items-center justify-between border-b border-slate-200 pb-4">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Корзина и Бронирование</h2>
-                        <p class="text-sm text-slate-500">Оформите быстрый заказ через облачную базу</p>
+                        <p class="text-sm text-slate-500">Оформите быстрый заказ продукции</p>
                     </div>
                     <button onclick="clearCart()" class="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-lg transition">
                         <i class="fa-solid fa-trash-can"></i> Очистить
@@ -144,7 +184,9 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2 space-y-4">
-                        <div id="cartItemsContainer" class="space-y-3"></div>
+                        <div id="cartItemsContainer" class="space-y-3">
+                            <p class="text-slate-400 text-sm">Ваша корзина пуста.</p>
+                        </div>
                     </div>
 
                     <div class="bg-white p-5 md:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 h-fit mb-16 md:mb-0">
@@ -163,9 +205,7 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">Улица в с. Бижбуляк *</label>
-                                <select id="resStreet" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white">
-                                    <option value="">Выберите улицу...</option>
-                                </select>
+                                <input type="text" id="resStreet" required placeholder="ул. Ленина" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
                             </div>
 
                             <div>
@@ -173,31 +213,12 @@
                                 <input type="text" id="resHouse" required placeholder="д. 12, кв. 4" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
                             </div>
 
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Способ получения</label>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-medium">
-                                        <input type="radio" name="deliveryType" value="Доставка" checked class="text-blue-600">
-                                        <span>Доставка</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-medium">
-                                        <input type="radio" name="deliveryType" value="Самовывоз" class="text-blue-600">
-                                        <span>Самовывоз</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Комментарий к заказу</label>
-                                <textarea id="resComment" rows="2" placeholder="Укажите удобное время или пожелания" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"></textarea>
-                            </div>
-
                             <div class="pt-4 border-t mt-3">
                                 <div class="flex justify-between items-center mb-4">
                                     <span class="font-semibold text-slate-600 text-sm">Итого:</span>
                                     <span id="cartTotalPrice" class="text-2xl font-black text-blue-600">0 ₽</span>
                                 </div>
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/20 transition duration-200 flex items-center justify-center gap-2 text-base">
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2 text-base">
                                     <i class="fa-solid fa-check"></i> Забронировать
                                 </button>
                             </div>
@@ -210,9 +231,11 @@
             <section id="tab-orders" class="tab-content hidden space-y-6">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-800">Мои бронирования</h2>
-                    <p class="text-sm text-slate-500">История ваших облачных заказов и статус их доставки</p>
+                    <p class="text-sm text-slate-500">История ваших заказов</p>
                 </div>
-                <div id="ordersList" class="space-y-4"></div>
+                <div id="ordersList" class="space-y-4">
+                    <p class="text-slate-400 text-sm">У вас пока нет активных заказов.</p>
+                </div>
             </section>
 
             <!-- TAB 4: User Profile / Auth -->
@@ -225,10 +248,10 @@
                                 <i class="fa-solid fa-bottle-droplet"></i>
                             </div>
                             <h2 class="text-2xl font-bold text-slate-800">Вход в систему</h2>
-                            <p class="text-xs text-slate-500">Авторизуйтесь через официальный аккаунт MAX SSO</p>
+                            <p class="text-xs text-slate-500">Авторизуйтесь через официальный аккаунт MAX ID</p>
                         </div>
 
-                        <!-- Real MAX SSO Profile Login Button -->
+                        <!-- Real MAX ID Login Button -->
                         <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl space-y-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-sm">
@@ -236,62 +259,32 @@
                                 </div>
                                 <div class="text-left">
                                     <p class="font-bold text-sm text-slate-800 leading-tight">Вход через MAX ID</p>
-                                    <p class="text-[11px] text-slate-500">Официальное SDK подлинности MAX</p>
+                                    <p class="text-[11px] text-slate-500">Бесшовная авторизация мессенджера</p>
                                 </div>
                             </div>
                             <button type="button" onclick="handleMaxProfileLogin()" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm cursor-pointer">
                                 <i class="fa-solid fa-shield-halved text-blue-200"></i> Войти с MAX ID
                             </button>
                         </div>
-
-                        <div class="flex items-center my-4">
-                            <div class="flex-grow border-t border-slate-200"></div>
-                            <span class="px-3 text-xs text-slate-400 font-medium">или по номеру телефона</span>
-                            <div class="flex-grow border-t border-slate-200"></div>
-                        </div>
-
-                        <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Номер телефона *</label>
-                                <input type="tel" id="authPhone" required placeholder="+7 (9XX) XXX-XX-XX" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Ваше имя *</label>
-                                <input type="text" id="authName" required placeholder="Например, Гульназ" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Улица постоянного проживания</label>
-                                <select id="authStreet" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white">
-                                    <option value="">Выберите улицу в Бижбуляке...</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">
-                                Войти по номеру
-                            </button>
-                        </form>
                     </div>
 
                     <!-- Logged In View -->
                     <div id="profileView" class="hidden space-y-6">
                         <div class="flex items-center space-x-4 border-b pb-4">
                             <div class="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-2xl" id="profileAvatar">
-                                И
+                                М
                             </div>
                             <div>
-                                <h3 id="profileNameDisplay" class="text-xl font-bold text-slate-800">Иван Иванов</h3>
-                                <p id="profilePhoneDisplay" class="text-sm text-slate-500">+7 (900) 000-00-00</p>
-                                <span class="inline-block mt-1 text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-semibold">Облачный аккаунт</span>
+                                <h3 id="profileNameDisplay" class="text-xl font-bold text-slate-800">Пользователь</h3>
+                                <p id="profilePhoneDisplay" class="text-sm text-slate-500">MAX ID</p>
+                                <span class="inline-block mt-1 text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-semibold">Подтвержден MAX ID</span>
                             </div>
                         </div>
 
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between py-2 border-b">
-                                <span class="text-slate-500">Адрес по умолчанию:</span>
-                                <span id="profileAddressDisplay" class="font-medium text-slate-800">с. Бижбуляк</span>
-                            </div>
-                            <div class="flex justify-between py-2 border-b">
-                                <span class="text-slate-500">Статус аккаунта:</span>
-                                <span class="font-medium text-emerald-600">Подтвержден MAX ID</span>
+                                <span class="text-slate-500">Регион:</span>
+                                <span class="font-medium text-slate-800">с. Бижбуляк, РБ</span>
                             </div>
                         </div>
                         <button onclick="handleLogout()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
@@ -305,7 +298,10 @@
 
     <!-- App JavaScript Logic -->
     <script>
+        let cart = [];
+
         document.addEventListener('DOMContentLoaded', () => {
+            // Инициализация моста мессенджера
             if (window.MAX && typeof window.MAX.ready === 'function') {
                 try {
                     window.MAX.ready();
@@ -314,89 +310,85 @@
                 }
             }
 
-            // Проверка сохраненной сессии
+            // Автоматическая попытка бесшовного входа при старте из мессенджера
+            attemptAutoLogin();
+
+            // Восстановление сессии из localStorage
             const savedUser = localStorage.getItem('max_user');
             if (savedUser) {
                 try {
-                    const userData = JSON.parse(savedUser);
-                    loginUserToUI(userData);
+                    loginUserToUI(JSON.parse(savedUser));
                 } catch (e) {
                     localStorage.removeItem('max_user');
                 }
             }
         });
 
-        // Функция получения реальных данных напрямую из window.MAX (без WebApp обертки)
-        function handleMaxProfileLogin() {
-            try {
-                let user = null;
-                const maxObj = window.MAX;
-
-                if (maxObj) {
-                    // 1. Проверяем свойства прямо на объекте window.MAX
-                    if (maxObj.initDataUnsafe?.user) {
-                        user = maxObj.initDataUnsafe.user;
-                    } else if (typeof maxObj.getUser === 'function') {
-                        user = maxObj.getUser();
-                    } else if (maxObj.user) {
-                        user = maxObj.user;
-                    }
-                }
-
-                // 2. Проверяем URL / Query / Hash параметры
-                if (!user) {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-                    const rawInitData = urlParams.get('initData') || hashParams.get('initData') || urlParams.get('user') || maxObj?.initData;
-
-                    if (rawInitData) {
-                        try {
-                            const parsed = new URLSearchParams(rawInitData);
-                            const userStr = parsed.get('user');
-                            if (userStr) {
-                                user = JSON.parse(decodeURIComponent(userStr));
-                            } else {
-                                user = JSON.parse(decodeURIComponent(rawInitData));
-                            }
-                        } catch (e) {
-                            if (typeof rawInitData === 'object') user = rawInitData;
-                        }
-                    }
-                }
-
-                // Если реальные данные найдены — авторизуем
-                if (user && (user.id || user.first_name || user.name)) {
-                    loginUserToUI({
-                        name: `${user.first_name || user.name || ''} ${user.last_name || ''}`.trim() || 'Пользователь MAX',
-                        phone: user.phone ? user.phone : ('MAX ID #' + (user.id || 'аккаунт')),
-                        address: 'с. Бижбуляк'
-                    });
-                } else {
-                    // Диагностика текущих полей window.MAX
-                    const keys = window.MAX ? Object.keys(window.MAX).join(', ') : 'window.MAX не найден';
-                    alert(`Платформа не передала данные пользователя.\nДоступные поля window.MAX: [${keys}]`);
-                }
-
-            } catch (err) {
-                console.error("Ошибка при получении данных MAX API:", err);
-                alert("Ошибка получения данных: " + err.message);
+        // Функция автоматического бесшовного входа
+        function attemptAutoLogin() {
+            const user = extractMaxUser();
+            if (user) {
+                loginUserToUI({
+                    name: `${user.first_name || user.name || ''} ${user.last_name || ''}`.trim() || 'Пользователь MAX',
+                    phone: user.phone ? user.phone : ('MAX ID #' + (user.id || 'аккаунт'))
+                });
             }
         }
 
-        // Обычный вход по номеру телефона
-        function handleLoginSubmit(event) {
-            event.preventDefault();
-            const phone = document.getElementById('authPhone').value;
-            const name = document.getElementById('authName').value;
-            
-            loginUserToUI({
-                name: name,
-                phone: phone,
-                address: 'с. Бижбуляк'
-            });
+        // Универсальный парсер данных пользователя из всех возможных свойств SDK и URL
+        function extractMaxUser() {
+            let user = null;
+            const maxObj = window.MAX;
+
+            if (maxObj) {
+                if (maxObj.initDataUnsafe?.user) user = maxObj.initDataUnsafe.user;
+                else if (maxObj.WebApp?.initDataUnsafe?.user) user = maxObj.WebApp.initDataUnsafe.user;
+                else if (typeof maxObj.getUser === 'function') user = maxObj.getUser();
+                else if (maxObj.user) user = maxObj.user;
+            }
+
+            if (!user) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+                const rawInitData = urlParams.get('initData') || hashParams.get('initData') || urlParams.get('user') || maxObj?.initData;
+
+                if (rawInitData) {
+                    try {
+                        const parsed = new URLSearchParams(rawInitData);
+                        const userStr = parsed.get('user');
+                        if (userStr) {
+                            user = JSON.parse(decodeURIComponent(userStr));
+                        } else {
+                            user = JSON.parse(decodeURIComponent(rawInitData));
+                        }
+                    } catch (e) {
+                        if (typeof rawInitData === 'object') user = rawInitData;
+                    }
+                }
+            }
+            return user;
         }
 
-        // Переключение интерфейса профиля
+        // Кнопка входа через MAX ID
+        function handleMaxProfileLogin() {
+            try {
+                const user = extractMaxUser();
+
+                if (user && (user.id || user.first_name || user.name)) {
+                    loginUserToUI({
+                        name: `${user.first_name || user.name || ''} ${user.last_name || ''}`.trim() || 'Пользователь MAX',
+                        phone: user.phone ? user.phone : ('MAX ID #' + (user.id || 'аккаунт'))
+                    });
+                } else {
+                    alert('Не удалось обнаружить данные аккаунта MAX. Убедитесь, что приложение запущено внутри мессенджера.');
+                }
+            } catch (err) {
+                console.error("Ошибка авторизации MAX ID:", err);
+                alert("Ошибка авторизации: " + err.message);
+            }
+        }
+
+        // Переключение интерфейса после успешного входа
         function loginUserToUI(userData) {
             const authView = document.getElementById('authView');
             const profileView = document.getElementById('profileView');
@@ -404,48 +396,20 @@
             if (authView) authView.classList.add('hidden');
             if (profileView) profileView.classList.remove('hidden');
             
-            const nameDisp = document.getElementById('profileNameDisplay');
-            const phoneDisp = document.getElementById('profilePhoneDisplay');
-            const addrDisp = document.getElementById('profileAddressDisplay');
-            const avatar = document.getElementById('profileAvatar');
+            document.getElementById('profileNameDisplay').innerText = userData.name;
+            document.getElementById('profilePhoneDisplay').innerText = userData.phone;
+            
+            const firstLetter = userData.name ? userData.name.charAt(0).toUpperCase() : 'М';
+            document.getElementById('profileAvatar').innerText = firstLetter;
+            
+            // Автозаполнение полей в форме бронирования
+            const nameInput = document.getElementById('resName');
+            const phoneInput = document.getElementById('resPhone');
+            if (nameInput && !nameInput.value) nameInput.value = userData.name;
+            if (phoneInput && !phoneInput.value && !userData.phone.startsWith('MAX ID')) phoneInput.value = userData.phone;
 
-            if (nameDisp) nameDisp.innerText = userData.name;
-            if (phoneDisp) phoneDisp.innerText = userData.phone;
-            if (addrDisp) addrDisp.innerText = userData.address;
-            
-            if (avatar) {
-                avatar.innerText = userData.name ? userData.name.charAt(0).toUpperCase() : 'M';
-            }
-            
             localStorage.setItem('max_user', JSON.stringify(userData));
         }
 
         // Выход из аккаунта
-        function handleLogout() {
-            localStorage.removeItem('max_user');
-            const profileView = document.getElementById('profileView');
-            const authView = document.getElementById('authView');
-            
-            if (profileView) profileView.classList.add('hidden');
-            if (authView) authView.classList.remove('hidden');
-        }
-
-        // Навигация по вкладкам
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            const target = document.getElementById('tab-' + tabId);
-            if (target) target.classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('bg-blue-50', 'text-blue-600', 'font-semibold');
-                el.classList.add('text-slate-600');
-            });
-            const activeNav = document.getElementById('nav-' + tabId);
-            if (activeNav) {
-                activeNav.classList.add('bg-blue-50', 'text-blue-600', 'font-semibold');
-                activeNav.classList.remove('text-slate-600');
-            }
-        }
-    </script>
-</body>
-</html>
+        function handleLogout()
