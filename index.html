@@ -306,13 +306,11 @@
     <!-- App JavaScript Logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Инициализация моста мессенджера
             if (window.MAX && window.MAX.WebApp) {
                 window.MAX.WebApp.ready();
-                checkMaxWebAppAuth();
             }
 
-            // Проверка сохраненной сессии в браузере
+            // Проверка сохраненной сессии
             const savedUser = localStorage.getItem('max_user');
             if (savedUser) {
                 try {
@@ -324,67 +322,50 @@
             }
         });
 
-        // Функция входа через MAX ID (с поддержкой тестового режима в браузере)
-        async function handleMaxProfileLogin() {
-            const initData = window.MAX?.WebApp?.initData;
+        // Функция входа через MAX ID (исправлено: реальный поиск данных из SDK или URL)
+        function handleMaxProfileLogin() {
+            // 1. Проверяем через SDK объект
+            let initData = window.MAX?.WebApp?.initData;
+            let unsafeUser = window.MAX?.WebApp?.initDataUnsafe?.user;
 
-            // Если открыто в обычном браузере (тестирование на GitHub Pages)
-            if (!initData) {
-                console.warn('SDK MAX не обнаружено. Включен демонстрационный вход для браузера.');
-                loginUserToUI({
-                    name: "Пользователь (Тест браузера)",
-                    phone: "MAX ID #DEMO-01",
-                    address: "с. Бижбуляк"
-                });
-                return;
-            }
-
-            try {
-                // Запрос на ваш сервер для проверки HMAC
-                const response = await fetch('/api/auth/max', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initData })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    loginUserToUI({
-                        name: `${result.user.first_name || ''} ${result.user.last_name || ''}`.trim() || 'Пользователь MAX',
-                        phone: result.user.phone || 'MAX ID #' + result.user.id,
-                        address: 'с. Бижбуляк'
-                    });
-                } else {
-                    alert('Ошибка проверки подписи: ' + (result.error || 'Неизвестно'));
-                }
-            } catch (error) {
-                console.warn('Сервер недоступен, пробуем initDataUnsafe:', error);
-                const unsafeUser = window.MAX?.WebApp?.initDataUnsafe?.user;
-                if (unsafeUser) {
-                    loginUserToUI({
-                        name: `${unsafeUser.first_name || ''} ${unsafeUser.last_name || ''}`.trim() || 'Пользователь MAX',
-                        phone: 'MAX ID #' + unsafeUser.id,
-                        address: 'с. Бижбуляк'
-                    });
-                } else {
-                    alert('Не удалось получить данные профиля из окружения MAX.');
-                }
-            }
-        }
-
-        // Автоматический вход внутри мессенджера
-        function checkMaxWebAppAuth() {
-            const unsafeUser = window.MAX?.WebApp?.initDataUnsafe?.user;
-            if (unsafeUser && !localStorage.getItem('max_user')) {
+            if (unsafeUser) {
                 loginUserToUI({
                     name: `${unsafeUser.first_name || ''} ${unsafeUser.last_name || ''}`.trim() || 'Пользователь MAX',
                     phone: 'MAX ID #' + unsafeUser.id,
                     address: 'с. Бижбуляк'
                 });
+                return;
             }
+
+            // 2. Проверяем параметры в адресной строке (URL / Query / Hash)
+            const urlParams = new URLSearchParams(window.location.search);
+            const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+            
+            const rawInitData = initData || urlParams.get('initData') || hashParams.get('initData');
+            
+            if (rawInitData) {
+                try {
+                    const parsed = new URLSearchParams(rawInitData);
+                    const userStr = parsed.get('user');
+                    if (userStr) {
+                        const user = JSON.parse(decodeURIComponent(userStr));
+                        loginUserToUI({
+                            name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Пользователь MAX',
+                            phone: user.phone || 'MAX ID #' + user.id,
+                            address: 'с. Бижбуляк'
+                        });
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Ошибка разбора initData:', e);
+                }
+            }
+
+            // Если реальных данных нет вообще нигде, показываем отладку
+            alert('Реальные данные профиля не переданы платформой.\nТекущий адрес: ' + window.location.href);
         }
 
-        // Обычный вход по номеру телефона (заглушка формы)
+        // Обычный вход по номеру телефона
         function handleLoginSubmit(event) {
             event.preventDefault();
             const phone = document.getElementById('authPhone').value;
@@ -431,10 +412,4 @@
             });
             const activeNav = document.getElementById('nav-' + tabId);
             if (activeNav) {
-                activeNav.classList.add('bg-blue-50', 'text-blue-600', 'font-semibold');
-                activeNav.classList.remove('text-slate-600');
-            }
-        }
-    </script>
-</body>
-</html>
+                activeNav.classList.add('bg-blue-50', 'text-blue-600', 'font
