@@ -265,6 +265,14 @@
                                 <i class="fa-solid fa-shield-halved text-blue-200"></i> Войти с MAX ID
                             </button>
                         </div>
+
+                        <!-- ДИАГНОСТИЧЕСКАЯ ПАНЕЛЬ ДЛЯ ТЕЛЕФОНА -->
+                        <div class="mt-4 p-3 bg-slate-100 rounded-xl border border-slate-200 text-left">
+                            <p class="text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-bug"></i> Диагностика окружения:</p>
+                            <div id="debugInfo" class="text-[10px] font-mono text-slate-600 break-all space-y-1">
+                                Загрузка диагностики...
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Logged In View -->
@@ -308,11 +316,11 @@
                 console.warn('MAX ready exception:', e);
             }
 
-            try {
-                // Пробуем автоматически залогинить пользователя по данным MAX SDK
-                attemptAutoLogin();
+            // Выводим диагностику на экран телефона
+            runDiagnostics();
 
-                // Восстановление сессии, если пользователь уже авторизовался ранее
+            try {
+                attemptAutoLogin();
                 const savedUser = localStorage.getItem('max_real_user');
                 if (savedUser) {
                     loginUserToUI(JSON.parse(savedUser));
@@ -321,6 +329,24 @@
                 localStorage.removeItem('max_real_user');
             }
         });
+
+        function runDiagnostics() {
+            const debugEl = document.getElementById('debugInfo');
+            if (!debugEl) return;
+
+            let info = [];
+            info.push(`URL: ${window.location.href}`);
+            info.push(`window.MAX: ${window.MAX ? 'ЕСТЬ (keys: ' + Object.keys(window.MAX).join(', ') + ')' : 'НЕТ'}`);
+            
+            // Проверим все глобальные переменные на наличие данных
+            for (let key in window) {
+                if (key.toLowerCase().includes('max') || key.toLowerCase().includes('webapp') || key.toLowerCase().includes('tg')) {
+                    info.push(`window[${key}]: найден`);
+                }
+            }
+
+            debugEl.innerHTML = info.join('<br>');
+        }
 
         function attemptAutoLogin() {
             const user = extractRealMaxUser();
@@ -332,7 +358,6 @@
             }
         }
 
-        // Извлечение исключительно реальных данных из окружения MAX
         function extractRealMaxUser() {
             try {
                 let user = null;
@@ -345,7 +370,6 @@
                     else if (maxObj.user) user = maxObj.user;
                 }
 
-                // Проверка параметров URL, если платформа передает initData через строку запроса
                 if (!user) {
                     const urlParams = new URLSearchParams(window.location.search);
                     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
@@ -375,7 +399,6 @@
                         phone: user.phone ? user.phone : ('MAX ID #' + (user.id || 'аккаунт'))
                     });
                 } else {
-                    // Если реальных данных нет (например, страница открыта в обычном браузере на GitHub)
                     alert("Авторизация по MAX ID доступна только при запуске мини-приложения непосредственно внутри мессенджера MAX.");
                 }
             } catch (err) {
@@ -479,7 +502,7 @@
 
         function changeQty(index, delta) {
             cart[index].qty += delta;
-            if (cart[index].qty <= 0) {
+            if (cart[index], qty <= 0) {
                 cart.splice(index, 1);
             }
             updateCartUI();
@@ -499,10 +522,10 @@
 
             const name = document.getElementById('resName').value;
             const phone = document.getElementById('resPhone').value;
-            const street = document.getElementById('resStreet').value;
+            const street = document.getElementById('resStreet5').value || document.getElementById('resStreet').value;
             const house = document.getElementById('resHouse').value;
 
-            alert(`Спасибо, ${name}! Ваша бронь успешно оформлена. Мы свяжемся с вами по номеру ${phone} для подтверждения доставки на ул. ${street}, ${house}.`);
+            alert(`Спасибо, ${name}! Ваша бронь успешно оформлена.`);
             
             cart = [];
             updateCartUI();
