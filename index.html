@@ -303,7 +303,7 @@
         </div>
     </main>
 
-    <!-- App JavaScript Logic (Safe Event Listeners) -->
+    <!-- App JavaScript Logic -->
     <script>
         let cart = [];
 
@@ -317,8 +317,6 @@
             }
 
             runDiagnostics();
-
-            // Инициализация обработчиков кнопок через addEventListener (обход CSP WebView)
             initEventListeners();
 
             try {
@@ -333,62 +331,36 @@
         });
 
         function initEventListeners() {
-            // Навигация по вкладкам
             document.querySelectorAll('[data-tab]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    switchTab(btn.getAttribute('data-tab'));
-                });
+                btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
             });
 
-            // Кнопка мобильной корзины
             const mobileCartBtn = document.getElementById('mobileCartBtn');
-            if (mobileCartBtn) {
-                mobileCartBtn.addEventListener('click', () => switchTab('cart'));
-            }
+            if (mobileCartBtn) mobileCartBtn.addEventListener('click', () => switchTab('cart'));
 
-            // Кнопки добавления товаров в каталог
             document.querySelectorAll('.add-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const title = btn.getAttribute('data-add');
-                    const price = Number(btn.getAttribute('data-price'));
-                    addToCart(title, price);
+                    addToCart(btn.getAttribute('data-add'), Number(btn.getAttribute('data-price')));
                 });
             });
 
-            // Кнопка очистки корзины
             const clearCartBtn = document.getElementById('clearCartBtn');
-            if (clearCartBtn) {
-                clearCartBtn.addEventListener('click', clearCart);
-            }
+            if (clearCartBtn) clearCartBtn.addEventListener('click', clearCart);
 
-            // Кнопка входа через MAX ID
             const maxLoginBtn = document.getElementById('maxLoginBtn');
-            if (maxLoginBtn) {
-                maxLoginBtn.addEventListener('click', handleMaxProfileLogin);
-            }
+            if (maxLoginBtn) maxLoginBtn.addEventListener('click', handleMaxProfileLogin);
 
-            // Кнопка выхода из аккаунта
             const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', handleLogout);
-            }
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
 
-            // Форма бронирования
             const reservationForm = document.getElementById('reservationForm');
-            if (reservationForm) {
-                reservationForm.addEventListener('submit', handleReservationSubmit);
-            }
+            if (reservationForm) reservationForm.addEventListener('submit', handleReservationSubmit);
         }
 
         function runDiagnostics() {
             const debugEl = document.getElementById('debugInfo');
             if (!debugEl) return;
-
-            let info = [];
-            info.push(`URL: ${window.location.href}`);
-            info.push(`window.MAX: ${window.MAX ? 'ЕСТЬ' : 'НЕТ'}`);
-            
-            debugEl.innerHTML = info.join('<br>');
+            debugEl.innerHTML = `Hash: ${window.location.hash.substring(0, 80)}...`;
         }
 
         function attemptAutoLogin() {
@@ -401,33 +373,43 @@
             }
         }
 
+        // ТОЧНЫЙ ПАРСЕР ДАННЫХ ИЗ URL ХЕША (WebAppData)
         function extractRealMaxUser() {
             try {
                 let user = null;
+                
+                // 1. Проверяем стандартные свойства SDK
                 const maxObj = window.MAX;
-
                 if (maxObj) {
                     if (maxObj.initDataUnsafe?.user) user = maxObj.initDataUnsafe.user;
                     else if (maxObj.WebApp?.initDataUnsafe?.user) user = maxObj.WebApp.initDataUnsafe.user;
-                    else if (typeof maxObj.getUser === 'function') user = maxObj.getUser();
-                    else if (maxObj.user) user = maxObj.user;
                 }
 
+                // 2. Если нет в SDK, парсим хэш адреса (WebAppData)
                 if (!user) {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-                    const rawInitData = urlParams.get('initData') || hashParams.get('initData') || urlParams.get('user');
-
-                    if (rawInitData) {
-                        const parsed = new URLSearchParams(rawInitData);
-                        const userStr = parsed.get('user');
-                        if (userStr) {
-                            user = JSON.parse(decodeURIComponent(userStr));
+                    const hash = window.location.hash.replace(/^#/, '');
+                    if (hash) {
+                        const hashParams = new URLSearchParams(hash);
+                        let webAppData = hashParams.get('WebAppData');
+                        if (webAppData) {
+                            let decodedWebAppData = decodeURIComponent(webAppData);
+                            let webAppParams = new URLSearchParams(decodedWebAppData);
+                            let userParam = webAppParams.get('user');
+                            
+                            if (userParam) {
+                                let decodedUser = userParam;
+                                // Многоуровневое декодирование URI-энкодинга JSON-строки
+                                for (let i = 0; i < 3; i++) {
+                                    try { decodedUser = decodeURIComponent(decodedUser); } catch (e) {}
+                                }
+                                user = JSON.parse(decodedUser);
+                            }
                         }
                     }
                 }
                 return user;
             } catch (e) {
+                console.error("Ошибка парсера пользователя:", e);
                 return null;
             }
         }
@@ -435,7 +417,6 @@
         function handleMaxProfileLogin() {
             try {
                 const user = extractRealMaxUser();
-
                 if (user && (user.id || user.first_name || user.name)) {
                     loginUserToUI({
                         name: `${user.first_name || user.name || ''} ${user.last_name || ''}`.trim() || 'Пользователь MAX',
@@ -445,7 +426,6 @@
                     alert("Авторизация по MAX ID доступна только при запуске мини-приложения непосредственно внутри мессенджера MAX.");
                 }
             } catch (err) {
-                console.error("Ошибка авторизации MAX ID:", err);
                 alert("Ошибка авторизации: " + err.message);
             }
         }
@@ -543,16 +523,11 @@
                 mobileBadge.classList.remove('hidden');
             }
 
-            // Вешаем обработчики на динамические кнопки плюс/минус в корзине
             container.querySelectorAll('.decrease-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    changeQty(Number(btn.getAttribute('data-index')), -1);
-                });
+                btn.addEventListener('click', () => changeQty(Number(btn.getAttribute('data-index')), -1));
             });
             container.querySelectorAll('.increase-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    changeQty(Number(btn.getAttribute('data-index')), 1);
-                });
+                btn.addEventListener('click', () => changeQty(Number(btn.getAttribute('data-index')), 1));
             });
         }
 
@@ -577,12 +552,11 @@
             }
 
             const name = document.getElementById('resName').value;
-            const phone = document.getElementById('resPhone.').value; // исправлено
-            const phoneInput = document.getElementById('resPhone').value;
+            const phone = document.getElementById('resPhone').value;
             const street = document.getElementById('resStreet').value;
             const house = document.getElementById('resHouse').value;
 
-            alert(`Спасибо, ${name}! Ваша бронь успешно оформлена. Мы свяжемся с вами по номеру ${phoneInput} для подтверждения доставки на ул. ${street}, ${house}.`);
+            alert(`Спасибо, ${name}! Ваша бронь успешно оформлена. Мы свяжемся с вами по номеру ${phone} для подтверждения доставки на ул. ${street}, ${house}.`);
             
             cart = [];
             updateCartUI();
