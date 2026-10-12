@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- MAX WebApp SDK (с защитой от сбоя загрузки) -->
-    <script src="https://dev.max.ru/js/webapp.js" onerror="console.warn('MAX SDK не загрузился в обычном браузере');"></script>
+    <!-- MAX WebApp SDK -->
+    <script src="https://dev.max.ru/js/webapp.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -69,22 +69,22 @@
 
         <!-- Navigation Links -->
         <nav class="flex md:flex-col justify-around md:justify-start p-2 md:p-4 gap-1 border-t md:border-t-0 border-slate-200 bg-white fixed bottom-0 left-0 right-0 md:relative z-40 shadow-lg md:shadow-none">
-            <button onclick="switchTab('catalog')" id="nav-catalog" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-blue-600 bg-blue-50 font-semibold w-full">
+            <button onclick="switchTab('catalog')" id="nav-catalog" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-blue-600 bg-blue-50 font-semibold w-full cursor-pointer">
                 <i class="fa-solid fa-store text-lg"></i>
                 <span class="text-[11px] md:text-base">Каталог</span>
             </button>
-            <button onclick="switchTab('cart')" id="nav-cart" class="nav-item flex flex-col md:flex-row items-center justify-between px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full relative">
+            <button onclick="switchTab('cart')" id="nav-cart" class="nav-item flex flex-col md:flex-row items-center justify-between px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full relative cursor-pointer">
                 <div class="flex flex-col md:flex-row items-center gap-2 md:gap-3">
                     <i class="fa-solid fa-basket-shopping text-lg"></i>
                     <span class="text-[11px] md:text-base">Бронь</span>
                 </div>
                 <span id="cartBadgeNav" class="hidden bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
             </button>
-            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full">
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full cursor-pointer">
                 <i class="fa-solid fa-clock-rotate-left text-lg"></i>
                 <span class="text-[11px] md:text-base">Заказы</span>
             </button>
-            <button onclick="switchTab('profile')" id="nav-profile" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full">
+            <button onclick="switchTab('profile')" id="nav-profile" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full cursor-pointer">
                 <i class="fa-solid fa-user text-lg"></i>
                 <span class="text-[11px] md:text-base">Профиль</span>
             </button>
@@ -309,18 +309,21 @@
             }
 
             try {
+                // Пробуем автоматически залогинить пользователя по данным MAX SDK
                 attemptAutoLogin();
-                const savedUser = localStorage.getItem('max_user');
+
+                // Восстановление сессии, если пользователь уже авторизовался ранее
+                const savedUser = localStorage.getItem('max_real_user');
                 if (savedUser) {
                     loginUserToUI(JSON.parse(savedUser));
                 }
             } catch (e) {
-                localStorage.removeItem('max_user');
+                localStorage.removeItem('max_real_user');
             }
         });
 
         function attemptAutoLogin() {
-            const user = extractMaxUser();
+            const user = extractRealMaxUser();
             if (user) {
                 loginUserToUI({
                     name: `${user.first_name || user.name || ''} ${user.last_name || ''}`.trim() || 'Пользователь MAX',
@@ -329,7 +332,8 @@
             }
         }
 
-        function extractMaxUser() {
+        // Извлечение исключительно реальных данных из окружения MAX
+        function extractRealMaxUser() {
             try {
                 let user = null;
                 const maxObj = window.MAX;
@@ -341,22 +345,17 @@
                     else if (maxObj.user) user = maxObj.user;
                 }
 
+                // Проверка параметров URL, если платформа передает initData через строку запроса
                 if (!user) {
                     const urlParams = new URLSearchParams(window.location.search);
                     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-                    const rawInitData = urlParams.get('initData') || hashParams.get('initData') || urlParams.get('user') || maxObj?.initData;
+                    const rawInitData = urlParams.get('initData') || hashParams.get('initData') || urlParams.get('user');
 
                     if (rawInitData) {
-                        try {
-                            const parsed = new URLSearchParams(rawInitData);
-                            const userStr = parsed.get('user');
-                            if (userStr) {
-                                user = JSON.parse(decodeURIComponent(userStr));
-                            } else {
-                                user = JSON.parse(decodeURIComponent(rawInitData));
-                            }
-                        } catch (e) {
-                            if (typeof rawInitData === 'object') user = rawInitData;
+                        const parsed = new URLSearchParams(rawInitData);
+                        const userStr = parsed.get('user');
+                        if (userStr) {
+                            user = JSON.parse(decodeURIComponent(userStr));
                         }
                     }
                 }
@@ -368,7 +367,7 @@
 
         function handleMaxProfileLogin() {
             try {
-                const user = extractMaxUser();
+                const user = extractRealMaxUser();
 
                 if (user && (user.id || user.first_name || user.name)) {
                     loginUserToUI({
@@ -376,11 +375,8 @@
                         phone: user.phone ? user.phone : ('MAX ID #' + (user.id || 'аккаунт'))
                     });
                 } else {
-                    // Тестовый fallback для обычной проверки в браузере, если SDK еще не передал данные
-                    loginUserToUI({
-                        name: "Иван Бижбуляк",
-                        phone: "MAX ID #DEMO",
-                    });
+                    // Если реальных данных нет (например, страница открыта в обычном браузере на GitHub)
+                    alert("Авторизация по MAX ID доступна только при запуске мини-приложения непосредственно внутри мессенджера MAX.");
                 }
             } catch (err) {
                 console.error("Ошибка авторизации MAX ID:", err);
@@ -410,11 +406,11 @@
             if (nameInput && !nameInput.value) nameInput.value = userData.name;
             if (phoneInput && !phoneInput.value && !userData.phone.startsWith('MAX ID')) phoneInput.value = userData.phone;
 
-            localStorage.setItem('max_user', JSON.stringify(userData));
+            localStorage.setItem('max_real_user', JSON.stringify(userData));
         }
 
         function handleLogout() {
-            localStorage.removeItem('max_user');
+            localStorage.removeItem('max_real_user');
             const profileView = document.getElementById('profileView');
             const authView = document.getElementById('authView');
             if (profileView) profileView.classList.add('hidden');
