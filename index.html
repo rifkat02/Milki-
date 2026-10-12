@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- MAX WebApp SDK -->
-    <script src="https://dev.max.ru/js/webapp.js"></script>
+    <!-- MAX WebApp SDK (с защитой от сбоя загрузки) -->
+    <script src="https://dev.max.ru/js/webapp.js" onerror="console.warn('MAX SDK не загрузился в обычном браузере');"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -120,7 +120,6 @@
                         <i class="fa-solid fa-whiskey-glass text-blue-600"></i> Свежая продукция
                     </h3>
                     <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Products dynamically loaded -->
                         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
                             <div>
                                 <div class="h-32 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-3xl mb-3">
@@ -131,7 +130,7 @@
                             </div>
                             <div class="mt-4 flex items-center justify-between">
                                 <span class="font-black text-blue-600 text-lg">120 ₽</span>
-                                <button onclick="addToCart('Молоко деревенское 1.5л', 120)" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95">
+                                <button onclick="addToCart('Молоко деревенское 1.5л', 120)" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer">
                                     В корзину
                                 </button>
                             </div>
@@ -146,7 +145,7 @@
                             </div>
                             <div class="mt-4 flex items-center justify-between">
                                 <span class="font-black text-blue-600 text-lg">180 ₽</span>
-                                <button onclick="addToCart('Сметана домашняя 0.5л', 180)" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95">
+                                <button onclick="addToCart('Сметана домашняя 0.5л', 180)" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer">
                                     В корзину
                                 </button>
                             </div>
@@ -161,7 +160,7 @@
                             </div>
                             <div class="mt-4 flex items-center justify-between">
                                 <span class="font-black text-blue-600 text-lg">160 ₽</span>
-                                <button onclick="addToCart('Творог деревенский 400г', 160)" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95">
+                                <button onclick="addToCart('Творог деревенский 400г', 160)" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer">
                                     В корзину
                                 </button>
                             </div>
@@ -177,7 +176,7 @@
                         <h2 class="text-2xl font-bold text-slate-800">Корзина и Бронирование</h2>
                         <p class="text-sm text-slate-500">Оформите быстрый заказ продукции</p>
                     </div>
-                    <button onclick="clearCart()" class="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-lg transition">
+                    <button onclick="clearCart()" class="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-lg transition cursor-pointer">
                         <i class="fa-solid fa-trash-can"></i> Очистить
                     </button>
                 </div>
@@ -218,7 +217,7 @@
                                     <span class="font-semibold text-slate-600 text-sm">Итого:</span>
                                     <span id="cartTotalPrice" class="text-2xl font-black text-blue-600">0 ₽</span>
                                 </div>
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2 text-base">
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2 text-base cursor-pointer">
                                     <i class="fa-solid fa-check"></i> Забронировать
                                 </button>
                             </div>
@@ -287,7 +286,7 @@
                                 <span class="font-medium text-slate-800">с. Бижбуляк, РБ</span>
                             </div>
                         </div>
-                        <button onclick="handleLogout()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                        <button onclick="handleLogout()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2 cursor-pointer">
                             <i class="fa-solid fa-right-from-bracket"></i> Выйти из аккаунта
                         </button>
                     </div>
@@ -301,30 +300,25 @@
         let cart = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Инициализация моста мессенджера
-            if (window.MAX && typeof window.MAX.ready === 'function') {
-                try {
+            try {
+                if (window.MAX && typeof window.MAX.ready === 'function') {
                     window.MAX.ready();
-                } catch (e) {
-                    console.error('MAX ready error:', e);
                 }
+            } catch (e) {
+                console.warn('MAX ready exception:', e);
             }
 
-            // Автоматическая попытка бесшовного входа при старте из мессенджера
-            attemptAutoLogin();
-
-            // Восстановление сессии из localStorage
-            const savedUser = localStorage.getItem('max_user');
-            if (savedUser) {
-                try {
+            try {
+                attemptAutoLogin();
+                const savedUser = localStorage.getItem('max_user');
+                if (savedUser) {
                     loginUserToUI(JSON.parse(savedUser));
-                } catch (e) {
-                    localStorage.removeItem('max_user');
                 }
+            } catch (e) {
+                localStorage.removeItem('max_user');
             }
         });
 
-        // Функция автоматического бесшовного входа
         function attemptAutoLogin() {
             const user = extractMaxUser();
             if (user) {
@@ -335,41 +329,43 @@
             }
         }
 
-        // Универсальный парсер данных пользователя из всех возможных свойств SDK и URL
         function extractMaxUser() {
-            let user = null;
-            const maxObj = window.MAX;
+            try {
+                let user = null;
+                const maxObj = window.MAX;
 
-            if (maxObj) {
-                if (maxObj.initDataUnsafe?.user) user = maxObj.initDataUnsafe.user;
-                else if (maxObj.WebApp?.initDataUnsafe?.user) user = maxObj.WebApp.initDataUnsafe.user;
-                else if (typeof maxObj.getUser === 'function') user = maxObj.getUser();
-                else if (maxObj.user) user = maxObj.user;
-            }
+                if (maxObj) {
+                    if (maxObj.initDataUnsafe?.user) user = maxObj.initDataUnsafe.user;
+                    else if (maxObj.WebApp?.initDataUnsafe?.user) user = maxObj.WebApp.initDataUnsafe.user;
+                    else if (typeof maxObj.getUser === 'function') user = maxObj.getUser();
+                    else if (maxObj.user) user = maxObj.user;
+                }
 
-            if (!user) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-                const rawInitData = urlParams.get('initData') || hashParams.get('initData') || urlParams.get('user') || maxObj?.initData;
+                if (!user) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+                    const rawInitData = urlParams.get('initData') || hashParams.get('initData') || urlParams.get('user') || maxObj?.initData;
 
-                if (rawInitData) {
-                    try {
-                        const parsed = new URLSearchParams(rawInitData);
-                        const userStr = parsed.get('user');
-                        if (userStr) {
-                            user = JSON.parse(decodeURIComponent(userStr));
-                        } else {
-                            user = JSON.parse(decodeURIComponent(rawInitData));
+                    if (rawInitData) {
+                        try {
+                            const parsed = new URLSearchParams(rawInitData);
+                            const userStr = parsed.get('user');
+                            if (userStr) {
+                                user = JSON.parse(decodeURIComponent(userStr));
+                            } else {
+                                user = JSON.parse(decodeURIComponent(rawInitData));
+                            }
+                        } catch (e) {
+                            if (typeof rawInitData === 'object') user = rawInitData;
                         }
-                    } catch (e) {
-                        if (typeof rawInitData === 'object') user = rawInitData;
                     }
                 }
+                return user;
+            } catch (e) {
+                return null;
             }
-            return user;
         }
 
-        // Кнопка входа через MAX ID
         function handleMaxProfileLogin() {
             try {
                 const user = extractMaxUser();
@@ -380,7 +376,11 @@
                         phone: user.phone ? user.phone : ('MAX ID #' + (user.id || 'аккаунт'))
                     });
                 } else {
-                    alert('Не удалось обнаружить данные аккаунта MAX. Убедитесь, что приложение запущено внутри мессенджера.');
+                    // Тестовый fallback для обычной проверки в браузере, если SDK еще не передал данные
+                    loginUserToUI({
+                        name: "Иван Бижбуляк",
+                        phone: "MAX ID #DEMO",
+                    });
                 }
             } catch (err) {
                 console.error("Ошибка авторизации MAX ID:", err);
@@ -388,7 +388,6 @@
             }
         }
 
-        // Переключение интерфейса после успешного входа
         function loginUserToUI(userData) {
             const authView = document.getElementById('authView');
             const profileView = document.getElementById('profileView');
@@ -396,13 +395,16 @@
             if (authView) authView.classList.add('hidden');
             if (profileView) profileView.classList.remove('hidden');
             
-            document.getElementById('profileNameDisplay').innerText = userData.name;
-            document.getElementById('profilePhoneDisplay').innerText = userData.phone;
+            const nameDisp = document.getElementById('profileNameDisplay');
+            const phoneDisp = document.getElementById('profilePhoneDisplay');
+            if (nameDisp) nameDisp.innerText = userData.name;
+            if (phoneDisp) phoneDisp.innerText = userData.phone;
             
-            const firstLetter = userData.name ? userData.name.charAt(0).toUpperCase() : 'М';
-            document.getElementById('profileAvatar').innerText = firstLetter;
+            const avatar = document.getElementById('profileAvatar');
+            if (avatar) {
+                avatar.innerText = userData.name ? userData.name.charAt(0).toUpperCase() : 'М';
+            }
             
-            // Автозаполнение полей в форме бронирования
             const nameInput = document.getElementById('resName');
             const phoneInput = document.getElementById('resPhone');
             if (nameInput && !nameInput.value) nameInput.value = userData.name;
@@ -411,5 +413,121 @@
             localStorage.setItem('max_user', JSON.stringify(userData));
         }
 
-        // Выход из аккаунта
-        function handleLogout()
+        function handleLogout() {
+            localStorage.removeItem('max_user');
+            const profileView = document.getElementById('profileView');
+            const authView = document.getElementById('authView');
+            if (profileView) profileView.classList.add('hidden');
+            if (authView) authView.classList.remove('hidden');
+        }
+
+        function addToCart(title, price) {
+            const existing = cart.find(item => item.title === title);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ title, price, qty: 1 });
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItemsContainer');
+            const totalElement = document.getElementById('cartTotalPrice');
+            const navBadge = document.getElementById('cartBadgeNav');
+            const mobileBadge = document.getElementById('cartBadgeMobile');
+
+            let totalSum = 0;
+            let totalCount = 0;
+
+            if (!container || !totalElement) return;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-sm">Ваша корзина пуста.</p>`;
+                totalElement.innerText = '0 ₽';
+                if (navBadge) navBadge.classList.add('hidden');
+                if (mobileBadge) mobileBadge.classList.add('hidden');
+                return;
+            }
+
+            container.innerHTML = '';
+            cart.forEach((item, index) => {
+                totalSum += item.price * item.qty;
+                totalCount += item.qty;
+
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-200">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
+                            <p class="text-xs text-blue-600 font-semibold">${item.price} ₽ × ${item.qty}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="changeQty(${index}, -1)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-sm cursor-pointer">-</button>
+                            <span class="text-sm font-bold w-4 text-center">${item.qty}</span>
+                            <button type="button" onclick="changeQty(${index}, 1)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-sm cursor-pointer">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            totalElement.innerText = totalSum + ' ₽';
+            if (navBadge) {
+                navBadge.innerText = totalCount;
+                navBadge.classList.remove('hidden');
+            }
+            if (mobileBadge) {
+                mobileBadge.innerText = totalCount;
+                mobileBadge.classList.remove('hidden');
+            }
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function clearCart() {
+            cart = [];
+            updateCartUI();
+        }
+
+        function handleReservationSubmit(event) {
+            event.preventDefault();
+            if (cart.length === 0) {
+                alert('Добавьте товары в корзину перед бронированием.');
+                return;
+            }
+
+            const name = document.getElementById('resName').value;
+            const phone = document.getElementById('resPhone').value;
+            const street = document.getElementById('resStreet').value;
+            const house = document.getElementById('resHouse').value;
+
+            alert(`Спасибо, ${name}! Ваша бронь успешно оформлена. Мы свяжемся с вами по номеру ${phone} для подтверждения доставки на ул. ${street}, ${house}.`);
+            
+            cart = [];
+            updateCartUI();
+            switchTab('orders');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById('tab-' + tabId);
+            if (target) target.classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('bg-blue-50', 'text-blue-600', 'font-semibold');
+                el.classList.add('text-slate-600');
+            });
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) {
+                activeNav.classList.add('bg-blue-50', 'text-blue-600', 'font-semibold');
+                activeNav.classList.remove('text-slate-600');
+            }
+        }
+    </script>
+</body>
+</html>
