@@ -1,75 +1,75 @@
-<!DOCTYPE html>
-<html lang="ru" id="appHtml" class="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="appPageTitle">Макс Доставка - Молочные продукты Бижбуляк</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
-    </script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- MAX WebApp SDK -->
-    <script src="https://dev.max.ru/js/webapp.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 h-screen flex flex-col md:flex-row overflow-hidden transition-colors duration-200">
+// --- ОБНОВЛЕННАЯ АВТОРИЗАЦИЯ МАКС ID И ЗАПРОСЫ В СООТВЕТСТВИИ С ДЕВДОК ОФИЦИАЛЬНОГО API ---
 
-    <!-- Mobile Header -->
-    <div class="md:hidden bg-blue-600 dark:bg-slate-800 text-white p-4 flex justify-between items-center shadow-md shrink-0 z-30 transition-colors">
-        <div id="mobileHeaderBrand" class="flex items-center space-x-3 cursor-pointer select-none">
-            <div id="mobileLogoContainer" class="bg-white text-blue-600 p-2 rounded-xl font-bold text-xl flex items-center justify-center w-10 h-10 shadow-sm overflow-hidden">
-                <i class="fa-solid fa-bottle-droplet" id="mobileLogoIcon"></i>
-            </div>
-            <div>
-                <h1 id="mobileBrandTitle" class="font-bold text-lg leading-tight">Макс Доставка</h1>
-                <p class="text-xs text-blue-100 dark:text-slate-400">с. Бижбуляк, РБ</p>
-            </div>
-        </div>
+// 1. Извлечение пользователя MAX ID только через официальный SDK
+function extractRealMaxUser() {
+    try {
+        let user = null;
+        const maxObj = window.MAX;
         
-        <div class="flex items-center gap-2">
-            <!-- Кнопка Поделиться -->
-            <a href="https://max.ru/se14609213_1_bot" target="_blank" class="p-2.5 bg-blue-700 dark:bg-slate-700 rounded-xl active:scale-95 transition text-white" title="Поделиться ботом">
-                <i class="fa-solid fa-share-nodes text-lg"></i>
-            </a>
-            <!-- Мобильная корзина -->
-            <button id="mobileCartBtn" class="relative p-2.5 bg-blue-700 dark:bg-slate-700 rounded-xl active:scale-95 transition cursor-pointer">
-                <i class="fa-solid fa-cart-shopping text-lg"></i>
-                <span id="cartBadgeMobile" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">0</span>
-            </button>
-        </div>
-    </div>
+        if (maxObj) {
+            // Чтение через официально поддерживаемый WebApp SDK
+            if (maxObj.WebApp && maxObj.WebApp.initDataUnsafe && maxObj.WebApp.initDataUnsafe.user) {
+                user = maxObj.WebApp.initDataUnsafe.user;
+            } else if (maxObj.initDataUnsafe && maxObj.initDataUnsafe.user) {
+                user = maxObj.initDataUnsafe.user;
+            }
+        }
+        return user;
+    } catch (e) {
+        console.error('Ошибка получения MAX ID:', e);
+        return null;
+    }
+}
 
-    <!-- Sidebar Navigation -->
-    <aside class="w-full md:w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col shrink-0 md:h-full z-20 transition-colors">
-        <!-- Brand Header (Desktop) -->
-        <div id="desktopHeaderBrand" class="hidden md:flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-700 bg-blue-600 dark:bg-slate-800 text-white select-none cursor-pointer">
-            <div class="flex items-center space-x-3">
-                <div id="desktopLogoContainer" class="bg-white text-blue-600 p-3 rounded-2xl font-black text-2xl shadow-sm flex items-center justify-center w-12 h-12 overflow-hidden">
-                    <i class="fa-solid fa-bottle-droplet" id="desktopLogoIcon"></i>
-                </div>
-                <div>
-                    <h1 id="desktopBrand
-                        
+// 2. Обработка нажатия кнопки "Войти с MAX ID"
+function handleMaxProfileLogin() {
+    const user = extractRealMaxUser();
+    
+    if (user && (user.id || user.first_name || user.name)) {
+        let savedData = JSON.parse(localStorage.getItem('max_real_user') || '{}');
+        
+        // Формируем данные профиля
+        const userData = {
+            id: String(user.id || ''),
+            name: `${user.first_name || user.name || ''} ${user.last_name || ''}`.trim() || 'Пользователь MAX',
+            phone: user.phone || savedData.phone || ''
+        };
+
+        // Проверка на заблокированных пользователей
+        let blockedUsers = JSON.parse(localStorage.getItem('max_blocked_users')) || [];
+        if (blockedUsers.includes(userData.id)) {
+            alert('Ваш аккаунт заблокирован администратором.');
+            return;
+        }
+
+        loginUserToUI(userData);
+        alert(`Успешный вход! Вы вошли как ${userData.name} (ID: ${userData.id})`);
+    } else {
+        alert("Не удалось получить данные MAX ID. Запустите мини-приложение внутри мессенджера MAX.");
+    }
+}
+
+// 3. Функция выполнения HTTPS-запросов к API MAX (согласно обновленной документации)
+async function maxApiRequest(endpoint, options = {}) {
+    // Получаем access_token или сырую строку initData
+    const accessToken = localStorage.getItem('max_bot_access_token') || '';
+    const initData = window.MAX?.WebApp?.initData || window.MAX?.initData || '';
+
+    // Передача через заголовок Authorization вместо query-параметров
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': accessToken ? accessToken : initData,
+        ...(options.headers || {})
+    };
+
+    try {
+        const response = await fetch(`https://api.max.ru/v1/${endpoint}`, {
+            ...options,
+            headers
+        });
+        return await response.json();
+    } catch (e) {
+        console.warn('Ошибка вызова API MAX:', e);
+        return null;
+    }
+}
