@@ -125,7 +125,7 @@
                         <i class="fa-solid fa-whiskey-glass text-blue-600"></i> Свежая продукция
                     </h3>
                     <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Products will be injected by JavaScript -->
+                        <!-- Products injected by JS -->
                     </div>
                 </div>
             </section>
@@ -305,17 +305,14 @@
 
     <!-- App JavaScript Logic -->
     <script>
-        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', () => {
-            // Уведомляем MAX о готовности мини-приложения
+            // Инициализация моста мессенджера
             if (window.MAX && window.MAX.WebApp) {
                 window.MAX.WebApp.ready();
-                
-                // Проверяем, есть ли уже данные пользователя в сессии MAX
                 checkMaxWebAppAuth();
             }
 
-            // Проверяем сохраненную сессию в localStorage
+            // Проверка сохраненной сессии в браузере
             const savedUser = localStorage.getItem('max_user');
             if (savedUser) {
                 try {
@@ -327,17 +324,23 @@
             }
         });
 
-        // Функция авторизации по кнопке "Войти с MAX ID"
+        // Функция входа через MAX ID (с поддержкой тестового режима в браузере)
         async function handleMaxProfileLogin() {
             const initData = window.MAX?.WebApp?.initData;
 
+            // Если открыто в обычном браузере (тестирование на GitHub Pages)
             if (!initData) {
-                alert('SDK MAX не обнаружено. Пожалуйста, откройте мини-приложение внутри мессенджера MAX.');
+                console.warn('SDK MAX не обнаружено. Включен демонстрационный вход для браузера.');
+                loginUserToUI({
+                    name: "Пользователь (Тест браузера)",
+                    phone: "MAX ID #DEMO-01",
+                    address: "с. Бижбуляк"
+                });
                 return;
             }
 
             try {
-                // Отправляем initData на ваш бэкенд для проверки HMAC и создания сессии
+                // Запрос на ваш сервер для проверки HMAC
                 const response = await fetch('/api/auth/max', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -352,12 +355,10 @@
                         address: 'с. Бижбуляк'
                     });
                 } else {
-                    alert('Ошибка проверки подписи на сервере: ' + (result.error || 'Неизвестно'));
+                    alert('Ошибка проверки подписи: ' + (result.error || 'Неизвестно'));
                 }
             } catch (error) {
-                console.warn('Сервер недоступен, пробуем клиентский fallback через initDataUnsafe:', error);
-                
-                // Безопасный fallback для тестирования интерфейса
+                console.warn('Сервер недоступен, пробуем initDataUnsafe:', error);
                 const unsafeUser = window.MAX?.WebApp?.initDataUnsafe?.user;
                 if (unsafeUser) {
                     loginUserToUI({
@@ -371,7 +372,7 @@
             }
         }
 
-        // Автоматический вход при запуске внутри MAX, если данные уже переданы
+        // Автоматический вход внутри мессенджера
         function checkMaxWebAppAuth() {
             const unsafeUser = window.MAX?.WebApp?.initDataUnsafe?.user;
             if (unsafeUser && !localStorage.getItem('max_user')) {
@@ -383,7 +384,20 @@
             }
         }
 
-        // Переключение интерфейса на залогиненное состояние
+        // Обычный вход по номеру телефона (заглушка формы)
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const phone = document.getElementById('authPhone').value;
+            const name = document.getElementById('authName').value;
+            
+            loginUserToUI({
+                name: name,
+                phone: phone,
+                address: 'с. Бижбуляк'
+            });
+        }
+
+        // Переключение интерфейса профиля
         function loginUserToUI(userData) {
             document.getElementById('authView').classList.add('hidden');
             document.getElementById('profileView').classList.remove('hidden');
@@ -392,7 +406,6 @@
             document.getElementById('profilePhoneDisplay').innerText = userData.phone;
             document.getElementById('profileAddressDisplay').innerText = userData.address;
             
-            // Первая буква имени для аватарки
             const firstLetter = userData.name.charAt(0).toUpperCase();
             document.getElementById('profileAvatar').innerText = firstLetter;
             
@@ -406,7 +419,7 @@
             document.getElementById('authView').classList.remove('hidden');
         }
 
-        // Переключение вкладок приложения (заглушка для вашей навигации)
+        // Навигация по вкладкам
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             const target = document.getElementById('tab-' + tabId);
