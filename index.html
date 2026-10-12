@@ -153,6 +153,21 @@
                         <h3 class="font-bold text-lg text-slate-800 border-b pb-2">Детали бронирования</h3>
                         
                         <form id="reservationForm" class="space-y-3">
+                            <!-- Способ получения -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Способ получения *</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-bold">
+                                        <input type="radio" name="deliveryType" value="pickup" checked onchange="updateCartUI()">
+                                        <i class="fa-solid fa-store text-blue-600"></i> Самовывоз
+                                    </label>
+                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-bold">
+                                        <input type="radio" name="deliveryType" value="delivery" onchange="updateCartUI()">
+                                        <i class="fa-solid fa-truck-fast text-blue-600"></i> Доставка
+                                    </label>
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">ФИО Получателя *</label>
                                 <input type="text" id="resName" required placeholder="Иван Иванов" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
@@ -163,9 +178,20 @@
                                 <input type="tel" id="resPhone" required placeholder="+7 (9XX) XXX-XX-XX" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
                             </div>
 
-                            <div>
+                            <!-- Выбор улицы с. Бижбуляк -->
+                            <div id="addressBlock">
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">Улица в с. Бижбуляк *</label>
-                                <input type="text" id="resStreet" required placeholder="ул. Ленина" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                                <select id="resStreetSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white mb-2">
+                                    <option value="ул. Ленина">ул. Ленина</option>
+                                    <option value="ул. Центральная">ул. Центральная</option>
+                                    <option value="ул. Победы">ул. Победы</option>
+                                    <option value="ул. Советская">ул. Советская</option>
+                                    <option value="ул. Чапаева">ул. Чапаева</option>
+                                    <option value="ул. Гагарина">ул. Гагарина</option>
+                                    <option value="ул. Молодежная">ул. Молодежная</option>
+                                    <option value="custom">-- Ввести свою улицу --</option>
+                                </select>
+                                <input type="text" id="resStreetCustom" placeholder="Введите название улицы" class="hidden w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm mb-2">
                             </div>
 
                             <div>
@@ -275,7 +301,7 @@
                         <i class="fa-solid fa-lock"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-slate-800">Доступ в админку</h2>
-                    <p class="text-xs text-slate-500">Введите PIN-код для входа в режим продавца (по умолчанию: 1234)</p>
+                    <p class="text-xs text-slate-500">Введите PIN-код для входа в режим продавца</p>
                     <div class="space-y-3">
                         <input type="password" id="adminPinInput" maxlength="10" placeholder="****" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-center font-bold text-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                         <button type="button" id="adminPinSubmitBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition text-sm cursor-pointer shadow-md">
@@ -284,12 +310,12 @@
                     </div>
                 </div>
 
-                <!--ОСНОВНОЙ ИНТЕРФЕЙС АДМИНКИ (скрыт до ввода кода) -->
+                <!-- ОСНОВНОЙ ИНТЕРФЕЙС АДМИНКИ -->
                 <div id="adminMainContent" class="hidden space-y-6">
                     <div class="flex items-center justify-between border-b border-purple-200 pb-4">
                         <div>
                             <h2 class="text-2xl font-bold text-purple-900">Панель администратора</h2>
-                            <p class="text-sm text-purple-600">Управление товарами, заказами и настройками</p>
+                            <p class="text-sm text-purple-600">Управление молочными товарами, ценами и заказами</p>
                         </div>
                         <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">Режим продавца</span>
                     </div>
@@ -308,26 +334,56 @@
                         </div>
                     </div>
 
-                    <!-- Добавление нового товара -->
+                    <!-- Добавление / Редактирование товара -->
                     <div class="bg-white p-5 md:p-6 rounded-3xl border border-purple-100 shadow-sm space-y-4">
-                        <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-plus text-purple-600"></i> Добавить новый товар в каталог
+                        <h3 id="adminFormHeader" class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-plus text-purple-600"></i> Добавить новый молочный товар
                         </h3>
                         <form id="addProductForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="hidden" id="editProductId" value="">
+                            
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">Название товара *</label>
-                                <input type="text" id="adminProdTitle" required placeholder="Например, Масло сливочное 200г" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                <input type="text" id="adminProdTitle" required placeholder="Например, Молоко 1.5л" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
                             </div>
+
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Цена (₽) *</label>
-                                <input type="number" id="adminProdPrice" required placeholder="220" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Статус наличия *</label>
+                                <select id="adminProdStatus" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+                                    <option value="in_stock">Есть в наличии</option>
+                                    <option value="out_of_stock">Нет в наличии</option>
+                                    <option value="coming_soon">Скоро будет</option>
+                                </select>
                             </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Цена при САМОВЫВОЗЕ (₽) *</label>
+                                <input type="number" id="adminProdPricePickup" required placeholder="120" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Цена С ДОСТАВКОЙ (₽) *</label>
+                                <input type="number" id="adminProdPriceDelivery" required placeholder="150" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                            </div>
+
                             <div class="md:col-span-2">
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">Описание товара</label>
-                                <input type="text" id="adminProdDesc" placeholder="Свежее натуральное масло 82.5%" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                <input type="text" id="adminProdDesc" placeholder="Свежее домашнее молоко" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
                             </div>
+
+                            <!-- Картинка товара: Ссылка или Загрузка файла -->
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Иконка (FontAwesome)</label>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Ссылка на картинку (URL)</label>
+                                <input type="url" id="adminProdImgUrl" placeholder="https://..." class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Или загрузить с устройства</label>
+                                <input type="file" id="adminProdImgFile" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Иконка (если нет картинки)</label>
                                 <select id="adminProdIcon" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
                                     <option value="fa-bottle-droplet">Бутылка (Молоко/Кефир)</option>
                                     <option value="fa-jar">Банка (Сметана)</option>
@@ -335,15 +391,29 @@
                                     <option value="fa-cube">Масло</option>
                                 </select>
                             </div>
-                            <div class="flex items-end">
-                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl transition text-sm cursor-pointer shadow-md">
-                                    Сохранить в каталог
+
+                            <div class="flex items-end gap-2">
+                                <button type="submit" id="saveProdBtn" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl transition text-sm cursor-pointer shadow-md">
+                                    Сохранить товар
+                                </button>
+                                <button type="button" id="cancelEditBtn" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-4 rounded-xl transition text-sm cursor-pointer">
+                                    Отмена
                                 </button>
                             </div>
                         </form>
                     </div>
 
-                    <!-- Все бронирования и связь с клиентом -->
+                    <!-- Управление имеющимися товарами -->
+                    <div class="bg-white p-5 md:p-6 rounded-3xl border border-purple-100 shadow-sm space-y-4">
+                        <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-boxes-stacked text-purple-600"></i> Список товаров в каталоге
+                        </h3>
+                        <div id="adminProductsContainer" class="space-y-3">
+                            <!-- Динамический список товаров для админа -->
+                        </div>
+                    </div>
+
+                    <!-- Все бронирования -->
                     <div class="space-y-4">
                         <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
                             <i class="fa-solid fa-list-check text-purple-600"></i> Входящие бронирования
@@ -364,11 +434,12 @@
         let cart = [];
         let secretClickCount = 0;
         let isAdminAuthorized = false;
+        let currentUploadedImageData = '';
 
         const defaultProducts = [
-            { id: 1, title: 'Молоко деревенское 1.5л', price: 120, desc: 'Свежее натуральное молоко из личного подсобного хозяйства.', icon: 'fa-bottle-droplet', bg: 'bg-blue-50', color: 'text-blue-600' },
-            { id: 2, title: 'Сметана домашняя 0.5л', price: 180, desc: 'Густая натуральная сметана высокой жирности.', icon: 'fa-jar', bg: 'bg-amber-50', color: 'text-amber-600' },
-            { id: 3, title: 'Творог деревенский 400г', price: 160, desc: 'Рассыпчатый и нежный творог.', icon: 'fa-cheese', bg: 'bg-emerald-50', color: 'text-emerald-600' }
+            { id: 1, title: 'Молоко деревенское 1.5л', pricePickup: 120, priceDelivery: 150, desc: 'Свежее натуральное молоко.', icon: 'fa-bottle-droplet', bg: 'bg-blue-50', color: 'text-blue-600', status: 'in_stock', image: '' },
+            { id: 2, title: 'Сметана домашняя 0.5л', pricePickup: 180, priceDelivery: 210, desc: 'Густая натуральная сметана.', icon: 'fa-jar', bg: 'bg-amber-50', color: 'text-amber-600', status: 'in_stock', image: '' },
+            { id: 3, title: 'Творог деревенский 400г', pricePickup: 160, priceDelivery: 190, desc: 'Рассыпчатый и нежный творог.', icon: 'fa-cheese', bg: 'bg-emerald-50', color: 'text-emerald-600', status: 'in_stock', image: '' }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -422,16 +493,47 @@
             const addProductForm = document.getElementById('addProductForm');
             if (addProductForm) addProductForm.addEventListener('submit', handleAddProductSubmit);
 
-            // Кнопка авторизации в админке по PIN
             const adminPinSubmitBtn = document.getElementById('adminPinSubmitBtn');
             if (adminPinSubmitBtn) adminPinSubmitBtn.addEventListener('click', verifyAdminPin);
 
-            // Кнопка смены PIN
             const changePinBtn = document.getElementById('changePinBtn');
             if (changePinBtn) changePinBtn.addEventListener('click', handleChangePin);
+
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            if (cancelEditBtn) cancelEditBtn.addEventListener('click', resetAdminProductForm);
+
+            // Обработка загрузки файла изображения с устройства
+            const fileInput = document.getElementById('adminProdImgFile');
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            currentUploadedImageData = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Переключатель улиц с. Бижбуляк
+            const resStreetSelect = document.getElementById('resStreetSelect');
+            if (resStreetSelect) {
+                resStreetSelect.addEventListener('change', (e) => {
+                    const customInput = document.getElementById('resStreetCustom');
+                    if (e.target.value === 'custom') {
+                        customInput.classList.remove('hidden');
+                        customInput.required = true;
+                    } else {
+                        customInput.classList.add('hidden');
+                        customInput.required = false;
+                    }
+                });
+            }
         }
 
-        // Вход по PIN-коду
+        // Авторизация в админке по PIN
         function verifyAdminPin() {
             const inputPin = document.getElementById('adminPinInput').value.trim();
             const currentPin = localStorage.getItem('max_admin_pin') || '1234';
@@ -441,12 +543,12 @@
                 document.getElementById('adminAuthLock').classList.add('hidden');
                 document.getElementById('adminMainContent').classList.remove('hidden');
                 renderAdminOrders();
+                renderAdminProductsList();
             } else {
                 alert('Неверный PIN-код!');
             }
         }
 
-        // Смена PIN-кода
         function handleChangePin() {
             const oldPin = document.getElementById('oldPinInput').value.trim();
             const newPin = document.getElementById('newPinInput').value.trim();
@@ -480,6 +582,7 @@
             }
         }
 
+        // Отрисовка каталога для клиентов
         function loadCatalog() {
             let products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
             const grid = document.getElementById('productGrid');
@@ -487,55 +590,162 @@
 
             grid.innerHTML = '';
             products.forEach(p => {
+                let statusBadge = '';
+                let isAvailable = p.status === 'in_stock';
+
+                if (p.status === 'in_stock') {
+                    statusBadge = `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">В наличии</span>`;
+                } else if (p.status === 'out_of_stock') {
+                    statusBadge = `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Нет в наличии</span>`;
+                } else if (p.status === 'coming_soon') {
+                    statusBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Скоро будет</span>`;
+                }
+
+                let imgHtml = '';
+                if (p.image) {
+                    imgHtml = `<img src="${p.image}" class="h-32 w-full object-cover rounded-xl mb-3" alt="${p.title}">`;
+                } else {
+                    imgHtml = `<div class="h-32 ${p.bg || 'bg-blue-50'} rounded-xl flex items-center justify-center ${p.color || 'text-blue-600'} text-3xl mb-3">
+                        <i class="fa-solid ${p.icon || 'fa-bottle-droplet'}"></i>
+                    </div>`;
+                }
+
                 grid.innerHTML += `
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="h-32 ${p.bg || 'bg-blue-50'} rounded-xl flex items-center justify-center ${p.color || 'text-blue-600'} text-3xl mb-3">
-                                <i class="fa-solid ${p.icon || 'fa-bottle-droplet'}"></i>
+                            ${imgHtml}
+                            <div class="flex justify-between items-start gap-2 mb-1">
+                                <h4 class="font-bold text-slate-800 text-sm leading-snug">${p.title}</h4>
+                                ${statusBadge}
                             </div>
-                            <h4 class="font-bold text-slate-800">${p.title}</h4>
                             <p class="text-xs text-slate-500 mt-1">${p.desc || ''}</p>
                         </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="font-black text-blue-600 text-lg">${p.price} ₽</span>
-                            <div class="flex gap-2">
-                                <button type="button" onclick="addToCart('${p.title}', ${p.price})" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer">
-                                    В корзину
-                                </button>
-                                ${document.getElementById('navAdminBtn')?.classList.contains('hidden') ? '' : `
-                                    <button type="button" onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 p-2 rounded-xl text-xs hover:bg-red-100 transition cursor-pointer" title="Удалить товар">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                `}
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                                <div class="text-xs text-slate-500">Самовывоз: <strong class="text-slate-800">${p.pricePickup} ₽</strong></div>
+                                <div class="text-xs text-blue-600 font-semibold">С доставкой: <strong>${p.priceDelivery} ₽</strong></div>
                             </div>
+                            <button type="button" onclick="addToCart(${p.id})" ${!isAvailable ? 'disabled' : ''} class="${isAvailable ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-300 cursor-not-allowed'} text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer">
+                                В корзину
+                            </button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function handleAddProductSubmit(e) {
-            e.preventDefault();
-            const title = document.getElementById('adminProdTitle').value;
-            const price = Number(document.getElementById('adminProdPrice').value);
-            const desc = document.getElementById('adminProdDesc').value;
-            const icon = document.getElementById('adminProdIcon').value;
+        // Рендер списка товаров в самой админке для редактирования и удаления
+        function renderAdminProductsList() {
+            const container = document.getElementById('adminProductsContainer');
+            if (!container) return;
 
             let products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
-            products.push({
-                id: Date.now(),
-                title,
-                price,
-                desc,
-                icon,
-                bg: 'bg-purple-50',
-                color: 'text-purple-600'
+
+            container.innerHTML = '';
+            products.forEach(p => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                        <div class="flex items-center gap-3">
+                            ${p.image ? `<img src="${p.image}" class="w-10 h-10 object-cover rounded-lg">` : `<div class="w-10 h-10 bg-purple-100 text-purple-700 flex items-center justify-center rounded-lg"><i class="fa-solid ${p.icon || 'fa-bottle-droplet'}"></i></div>`}
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800">${p.title}</h4>
+                                <p class="text-xs text-slate-500">Самовывоз: ${p.pricePickup}₽ | Доставка: ${p.priceDelivery}₽</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="editProduct(${p.id})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-blue-100 transition cursor-pointer">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button type="button" onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-red-100 transition cursor-pointer">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
             });
+        }
+
+        // Сохранение/Обновление товара в админке
+        function handleAddProductSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editProductId').value;
+            const title = document.getElementById('adminProdTitle').value;
+            const status = document.getElementById('adminProdStatus').value;
+            const pricePickup = Number(document.getElementById('adminProdPricePickup').value);
+            const priceDelivery = Number(document.getElementById('adminProdPriceDelivery').value);
+            const desc = document.getElementById('adminProdDesc').value;
+            const icon = document.getElementById('adminProdIcon').value;
+            const imgUrl = document.getElementById('adminProdImgUrl').value;
+
+            let finalImage = currentUploadedImageData || imgUrl || '';
+
+            let products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
+
+            if (editId) {
+                // Редактирование
+                const idx = products.findIndex(p => p.id === Number(editId));
+                if (idx !== -1) {
+                    products[idx] = {
+                        ...products[idx],
+                        title,
+                        status,
+                        pricePickup,
+                        priceDelivery,
+                        desc,
+                        icon,
+                        image: finalImage || products[idx].image
+                    };
+                }
+            } else {
+                // Добавление нового
+                products.push({
+                    id: Date.now(),
+                    title,
+                    status,
+                    pricePickup,
+                    priceDelivery,
+                    desc,
+                    icon,
+                    image: finalImage,
+                    bg: 'bg-purple-50',
+                    color: 'text-purple-600'
+                });
+            }
 
             localStorage.setItem('max_products', JSON.stringify(products));
             loadCatalog();
+            renderAdminProductsList();
+            resetAdminProductForm();
+            alert('Товар успешно сохранен!');
+        }
+
+        // Наполнение формы для редактирования
+        function editProduct(id) {
+            let products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('editProductId').value = prod.id;
+            document.getElementById('adminProdTitle').value = prod.title;
+            document.getElementById('adminProdStatus').value = prod.status || 'in_stock';
+            document.getElementById('adminProdPricePickup').value = prod.pricePickup;
+            document.getElementById('adminProdPriceDelivery').value = prod.priceDelivery;
+            document.getElementById('adminProdDesc').value = prod.desc || '';
+            document.getElementById('adminProdIcon').value = prod.icon || 'fa-bottle-droplet';
+            document.getElementById('adminProdImgUrl').value = prod.image && !prod.image.startsWith('data:') ? prod.image : '';
+
+            document.getElementById('adminFormHeader').innerHTML = `<i class="fa-solid fa-pen text-purple-600"></i> Редактировать товар`;
+            document.getElementById('saveProdBtn').innerText = 'Обновить товар';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+        }
+
+        function resetAdminProductForm() {
             document.getElementById('addProductForm').reset();
-            alert(`Товар "${title}" добавлен в каталог!`);
+            document.getElementById('editProductId').value = '';
+            currentUploadedImageData = '';
+            document.getElementById('adminFormHeader').innerHTML = `<i class="fa-solid fa-plus text-purple-600"></i> Добавить новый молочный товар`;
+            document.getElementById('saveProdBtn').innerText = 'Сохранить товар';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
         }
 
         function deleteProduct(id) {
@@ -544,6 +754,7 @@
             products = products.filter(p => p.id !== id);
             localStorage.setItem('max_products', JSON.stringify(products));
             loadCatalog();
+            renderAdminProductsList();
         }
 
         function renderAdminOrders() {
@@ -558,7 +769,7 @@
             }
 
             container.innerHTML = '';
-            orders.reverse().forEach((order) => {
+            orders.slice().reverse().forEach((order) => {
                 let itemsList = order.items.map(i => `${i.title} (${i.qty} шт.)`).join(', ');
 
                 container.innerHTML += `
@@ -572,6 +783,7 @@
                         </div>
                         
                         <div class="text-xs text-slate-600 space-y-1">
+                            <p><i class="fa-solid fa-truck-fast text-slate-400"></i> <strong>Способ:</strong> ${order.deliveryType === 'delivery' ? 'Доставка' : 'Самовывоз'}</p>
                             <p><i class="fa-solid fa-location-dot text-slate-400"></i> <strong>Адрес:</strong> с. Бижбуляк, ${order.street}, ${order.house}</p>
                             <p><i class="fa-solid fa-basket-shopping text-slate-400"></i> <strong>Товары:</strong> ${itemsList}</p>
                         </div>
@@ -711,15 +923,19 @@
             if (authView) authView.classList.remove('hidden');
         }
 
-        function addToCart(title, price) {
-            const existing = cart.find(item => item.title === title);
+        function addToCart(productId) {
+            let products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
+            const prod = products.find(p => p.id === productId);
+            if (!prod) return;
+
+            const existing = cart.find(item => item.id === productId);
             if (existing) {
                 existing.qty += 1;
             } else {
-                cart.push({ title, price, qty: 1 });
+                cart.push({ id: prod.id, title: prod.title, pricePickup: prod.pricePickup, priceDelivery: prod.priceDelivery, qty: 1 });
             }
             updateCartUI();
-            alert(`Товар "${title}" добавлен в корзину!`);
+            alert(`Товар "${prod.title}" добавлен в корзину!`);
         }
 
         function updateCartUI() {
@@ -730,6 +946,8 @@
 
             let totalSum = 0;
             let totalCount = 0;
+
+            const isDelivery = document.querySelector('input[name="deliveryType"]:checked')?.value === 'delivery';
 
             if (!container || !totalElement) return;
 
@@ -743,14 +961,15 @@
 
             container.innerHTML = '';
             cart.forEach((item, index) => {
-                totalSum += item.price * item.qty;
+                const currentPrice = isDelivery ? item.priceDelivery : item.pricePickup;
+                totalSum += currentPrice * item.qty;
                 totalCount += item.qty;
 
                 container.innerHTML += `
                     <div class="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-200">
                         <div>
                             <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
-                            <p class="text-xs text-blue-600 font-semibold">${item.price} ₽ × ${item.qty}</p>
+                            <p class="text-xs text-blue-600 font-semibold">${currentPrice} ₽ × ${item.qty} ${isDelivery ? '(цена с доставкой)' : '(самовывоз)'}</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <button type="button" class="decrease-btn w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-sm cursor-pointer" data-index="${index}">-</button>
@@ -799,15 +1018,22 @@
                 return;
             }
 
+            const deliveryType = document.querySelector('input[name="deliveryType"]:checked').value;
             const name = document.getElementById('resName').value;
             const phone = document.getElementById('resPhone').value;
-            const street = document.getElementById('resStreet').value;
+            
+            let street = document.getElementById('resStreetSelect').value;
+            if (street === 'custom') {
+                street = document.getElementById('resStreetCustom').value;
+            }
             const house = document.getElementById('resHouse').value;
 
-            let totalSum = cart.reduce((acc, i) => acc + i.price * i.qty, 0);
+            const isDelivery = deliveryType === 'delivery';
+            let totalSum = cart.reduce((acc, i) => acc + (isDelivery ? i.priceDelivery : i.pricePickup) * i.qty, 0);
 
             const newOrder = {
                 id: Date.now(),
+                deliveryType,
                 name,
                 phone,
                 street,
@@ -825,7 +1051,7 @@
             savedData.phone = phone;
             localStorage.setItem('max_real_user', JSON.stringify(savedData));
 
-            alert(`Спасибо, ${name}! Ваша бронь успешно оформлена. Мы свяжемся с вами по номеру ${phone} для подтверждения доставки.`);
+            alert(`Спасибо, ${name}! Ваша бронь успешно оформлена. Мы свяжемся с вами по номеру ${phone}.`);
             
             cart = [];
             updateCartUI();
@@ -849,6 +1075,7 @@
 
             if (tabId === 'admin' && isAdminAuthorized) {
                 renderAdminOrders();
+                renderAdminProductsList();
             }
         }
     </script>
