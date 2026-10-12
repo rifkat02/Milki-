@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мессенджер Макс - Молочные продукты Бижбуляк</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom scrollbar for modern messenger feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 h-screen flex flex-col md:flex-row overflow-hidden">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-blue-600 text-white p-4 flex justify-between items-center shadow-md shrink-0 z-30">
+        <div class="flex items-center space-x-3 cursor-pointer select-none" onclick="handleSecretAdminClick()">
+            <div class="bg-white text-blue-600 p-2 rounded-xl font-bold text-xl flex items-center justify-center w-10 h-10 shadow-sm">
+                <i class="fa-solid fa-bottle-droplet"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">Макс Доставка</h1>
+                <p class="text-xs text-blue-100">с. Бижбуляк, РБ</p>
+            </div>
+        </div>
+        <button id="mobileCartBtn" onclick="switchTab('cart')" class="relative p-2.5 bg-blue-700 rounded-xl active:scale-95 transition">
+            <i class="fa-solid fa-cart-shopping text-lg"></i>
+            <span id="cartBadgeMobile" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">0</span>
+        </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-80 bg-white border-r border-slate-200 flex flex-col shrink-0 md:h-full z-20">
+        <!-- Brand Header (Desktop) -->
+        <div class="hidden md:flex items-center space-x-3 p-5 border-b border-slate-100 bg-blue-600 text-white select-none cursor-pointer" onclick="handleSecretAdminClick()">
+            <div class="bg-white text-blue-600 p-3 rounded-2xl font-black text-2xl shadow-sm flex items-center justify-center w-12 h-12">
+                <i class="fa-solid fa-bottle-droplet"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-xl tracking-tight">Макс Доставка</h1>
+                <p class="text-xs text-blue-100 flex items-center gap-1">
+                    <i class="fa-solid fa-location-dot text-xs"></i> Бижбулякский район
+                </p>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex md:flex-col justify-around md:justify-start p-2 md:p-4 gap-1 border-t md:border-t-0 border-slate-200 bg-white fixed bottom-0 left-0 right-0 md:relative z-40 shadow-lg md:shadow-none">
+            <button onclick="switchTab('catalog')" id="nav-catalog" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-blue-600 bg-blue-50 font-semibold w-full">
+                <i class="fa-solid fa-store text-lg"></i>
+                <span class="text-[11px] md:text-base">Каталог</span>
+            </button>
+            <button onclick="switchTab('cart')" id="nav-cart" class="nav-item flex flex-col md:flex-row items-center justify-between px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full relative">
+                <div class="flex flex-col md:flex-row items-center gap-2 md:gap-3">
+                    <i class="fa-solid fa-basket-shopping text-lg"></i>
+                    <span class="text-[11px] md:text-base">Бронь</span>
+                </div>
+                <span id="cartBadgeNav" class="hidden bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+            </button>
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full">
+                <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                <span class="text-[11px] md:text-base">Заказы</span>
+            </button>
+            <button onclick="switchTab('profile')" id="nav-profile" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full">
+                <i class="fa-solid fa-user text-lg"></i>
+                <span class="text-[11px] md:text-base">Профиль</span>
+            </button>
+            <!-- Hidden Admin Button (Appears only when unlocked) -->
+            <button onclick="switchTab('admin')" id="nav-admin" class="nav-item hidden flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-purple-700 bg-purple-50 font-bold w-full">
+                <i class="fa-solid fa-user-shield text-lg"></i>
+                <span class="text-[11px] md:text-base">Админка</span>
+            </button>
+        </nav>
+
+        <!-- Sidebar Info Footer (Desktop) -->
+        <div class="hidden md:block mt-auto p-4 m-4 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs text-slate-500">
+            <div class="flex items-center gap-2 text-slate-700 font-semibold mb-1">
+                <i class="fa-solid fa-truck-fast text-blue-600"></i> График доставки:
+            </div>
+            <p>Ежедневно: 08:00 - 20:00</p>
+            <p class="mt-1">Свежая продукция местного производства с. Бижбуляк.</p>
+        </div>
+    </aside>
+
+    <!-- Main Content Area with ample padding-bottom for mobile nav clearance -->
+    <main class="flex-1 bg-slate-50 overflow-y-auto pb-48 md:pb-12 p-4 md:p-8">
+        <div class="max-w-4xl mx-auto">
+
+            <!-- TAB 1: Catalog View -->
+            <section id="tab-catalog" class="tab-content block space-y-6">
+                <!-- Header / Banner -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
+                    <div class="relative z-10 max-w-xl">
+                        <span class="bg-blue-500/40 text-blue-100 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Экологически чисто</span>
+                        <h2 class="text-2xl md:text-4xl font-extrabold mt-2 mb-2">Натуральное молоко и продукты</h2>
+                        <p class="text-blue-100 text-sm md:text-base">Доставим до вашего дома в Бижбуляке или забронируйте для самовывоза.</p>
+                    </div>
+                    <i class="fa-solid fa-cow text-white/10 text-9xl absolute -right-6 -bottom-8 pointer-events-none"></i>
+                </div>
+
+                <!-- Product Categories / Grid -->
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-whiskey-glass text-blue-600"></i> Свежая продукция
+                    </h3>
+                    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Products will be injected by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: Cart & Reservation View -->
+            <section id="tab-cart" class="tab-content hidden space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Корзина и Бронирование</h2>
+                        <p class="text-sm text-slate-500">Оформите быстрый заказ без сложных паролей</p>
+                    </div>
+                    <button onclick="clearCart()" class="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-lg transition">
+                        <i class="fa-solid fa-trash-can"></i> Очистить
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Cart Items List -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <div id="cartItemsContainer" class="space-y-3">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Checkout Form with explicit bottom spacing -->
+                    <div class="bg-white p-5 md:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 h-fit mb-16 md:mb-0">
+                        <h3 class="font-bold text-lg text-slate-800 border-b pb-2">Детали бронирования</h3>
+                        
+                        <form id="reservationForm" onsubmit="handleReservationSubmit(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">ФИО Получателя *</label>
+                                <input type="text" id="resName" required placeholder="Иван Иванов" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Номер телефона *</label>
+                                <input type="tel" id="resPhone" required placeholder="+7 (9XX) XXX-XX-XX" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Улица в с. Бижбуляк *</label>
+                                <select id="resStreet" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white">
+                                    <option value="">Выберите улицу...</option>
+                                    <!-- Injected by JS -->
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Дом / Квартира *</label>
+                                <input type="text" id="resHouse" required placeholder="д. 12, кв. 4" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Способ получения</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-medium">
+                                        <input type="radio" name="deliveryType" value="Доставка" checked class="text-blue-600">
+                                        <span>Доставка</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-medium">
+                                        <input type="radio" name="deliveryType" value="Самовывоз" class="text-blue-600">
+                                        <span>Самовывоз</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Комментарий к заказу</label>
+                                <textarea id="resComment" rows="2" placeholder="Укажите удобное время или пожелания" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"></textarea>
+                            </div>
+
+                            <!-- Total & Action Area -->
+                            <div class="pt-4 border-t mt-3">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="font-semibold text-slate-600 text-sm">Итого:</span>
+                                    <span id="cartTotalPrice" class="text-2xl font-black text-blue-600">0 ₽</span>
+                                </div>
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/20 transition duration-200 flex items-center justify-center gap-2 text-base">
+                                    <i class="fa-solid fa-check"></i> Забронировать
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: Orders History -->
+            <section id="tab-orders" class="tab-content hidden space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Мои бронирования</h2>
+                    <p class="text-sm text-slate-500">История ваших заказов и статус их доставки в Бижбуляке</p>
+                </div>
+
+                <div id="ordersList" class="space-y-4">
+                    <!-- Injected by JS -->
+                </div>
+            </section>
+
+            <!-- TAB 4: User Profile / Auth -->
+            <section id="tab-profile" class="tab-content hidden space-y-6">
+                <div class="max-w-lg mx-auto bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm">
+                    <!-- Not Logged In View -->
+                    <div id="authView" class="space-y-6">
+                        <div class="text-center space-y-2">
+                            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-800">Вход по номеру</h2>
+                            <p class="text-xs text-slate-500">Авторизация по номеру телефона без сложных паролей</p>
+                        </div>
+
+                        <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Номер телефона *</label>
+                                <input type="tel" id="authPhone" required placeholder="+7 (9XX) XXX-XX-XX" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Ваше имя *</label>
+                                <input type="text" id="authName" required placeholder="Например, Гульназ" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Улица постоянного проживания</label>
+                                <select id="authStreet" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white">
+                                    <option value="">Выберите улицу в Бижбуляке...</option>
+                                    <!-- Injected by JS -->
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition">
+                                Войти / Зарегистрироваться
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Logged In View -->
+                    <div id="profileView" class="hidden space-y-6">
+                        <div class="flex items-center space-x-4 border-b pb-4">
+                            <div class="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-2xl" id="profileAvatar">
+                                И
+                            </div>
+                            <div>
+                                <h3 id="profileNameDisplay" class="text-xl font-bold text-slate-800">Иван Иванов</h3>
+                                <p id="profilePhoneDisplay" class="text-sm text-slate-500">+7 (900) 000-00-00</p>
+                                <span class="inline-block mt-1 text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-semibold">Активный профиль</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="text-slate-500">Адрес по умолчанию:</span>
+                                <span id="profileAddressDisplay" class="font-medium text-slate-800">с. Бижбуляк, ул. Центральная</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="text-slate-500">Статус клиента:</span>
+                                <span class="font-medium text-blue-600">Постоянный покупатель</span>
+                            </div>
+                        </div>
+
+                        <button onclick="logout()" class="w-full border border-red-200 text-red-600 hover:bg-red-50 font-semibold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Выйти из профиля
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: ADMIN PANEL (Hidden from regular users) -->
+            <section id="tab-admin" class="tab-content hidden space-y-6">
+                <div class="bg-purple-900 text-white p-6 rounded-3xl shadow-xl flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-purple-300 text-xl"></i>
+                            <h2 class="text-2xl font-black">Панель Администратора</h2>
+                        </div>
+                        <p class="text-purple-200 text-xs mt-1">Управление заказами и остатками молочной продукции с. Бижбуляк</p>
+                    </div>
+                    <button onclick="lockAdmin()" class="bg-purple-800 hover:bg-purple-700 text-white text-xs px-3 py-2 rounded-xl border border-purple-600 transition">
+                        <i class="fa-solid fa-lock"></i> Выйти
+                    </button>
+                </div>
+
+                <!-- Admin Tabs / Navigation -->
+                <div class="flex gap-2 border-b border-slate-200 pb-2">
+                    <button onclick="switchAdminSubTab('orders')" id="adminSubNav-orders" class="px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white">
+                        <i class="fa-solid fa-list-check me-1"></i> Все Заказы (<span id="adminOrdersCount">0</span>)
+                    </button>
+                    <button onclick="switchAdminSubTab('products')" id="adminSubNav-products" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300">
+                        <i class="fa-solid fa-boxes-stacked me-1"></i> Товары и Наличие
+                    </button>
+                </div>
+
+                <!-- Admin SubTab 1: All Orders -->
+                <div id="adminSubTab-orders" class="space-y-4">
+                    <div id="adminOrdersList" class="space-y-4">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Admin SubTab 2: Product Management & Stock -->
+                <div id="adminSubTab-products" class="hidden space-y-6">
+                    <!-- Add Product Form Collapsible / Modal Trigger -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-purple-600"></i> Добавить новый продукт
+                        </h3>
+                        <form id="addProductForm" onsubmit="handleAddProduct(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-1">Название товара *</label>
+                                <input type="text" id="newProdName" required placeholder="Например: Сливки 30%" class="w-full p-2.5 rounded-xl border border-slate-300">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-1">Объем / Вес *</label>
+                                <input type="text" id="newProdVolume" required placeholder="500 мл" class="w-full p-2.5 rounded-xl border border-slate-300">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-1">Цена (₽) *</label>
+                                <input type="number" id="newProdPrice" required placeholder="150" class="w-full p-2.5 rounded-xl border border-slate-300">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 mb-1">Категория *</label>
+                                <select id="newProdCategory" required class="w-full p-2.5 rounded-xl border border-slate-300 bg-white">
+                                    <option value="Молоко">Молоко</option>
+                                    <option value="Творог">Творог</option>
+                                    <option value="Сметана">Сметана</option>
+                                    <option value="Масло">Масло</option>
+                                    <option value="Кисломолочные">Кисломолочные</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block font-semibold text-slate-600 mb-1">Ссылка на фото (URL)</label>
+                                <input type="url" id="newProdImg" placeholder="https://images.unsplash.com/..." class="w-full p-2.5 rounded-xl border border-slate-300">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block font-semibold text-slate-600 mb-1">Описание</label>
+                                <textarea id="newProdDesc" rows="2" placeholder="Краткое описание товара..." class="w-full p-2.5 rounded-xl border border-slate-300"></textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2.5 rounded-xl transition">
+                                    Сохранить и добавить в каталог
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Existing Products Management Table / Cards -->
+                    <div id="adminProductsList" class="space-y-3">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal Dialog -->
+    <div id="modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl animate-fade-in">
+            <div id="modalIcon" class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="modalTitle" class="text-xl font-bold text-slate-800">Успешно!</h3>
+            <p id="modalMessage" class="text-sm text-slate-600">Ваша бронь успешно создана.</p>
+            <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-xl transition text-sm">
+                Понятно
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Access Secret Modal -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xs w-full p-6 text-center space-y-4 shadow-2xl">
+            <div class="w-12 h-12 bg-purple-100 text-purple-700 rounded-2xl flex items-center justify-center mx-auto text-xl font-bold">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">Вход для администратора</h3>
+            <p class="text-xs text-slate-500">Введите PIN-код для доступа (по умолчанию: 1234)</p>
+            <input type="password" id="adminPinInput" maxlength="6" placeholder="PIN-код" class="w-full text-center text-xl tracking-widest font-bold py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:outline-none">
+            <div class="flex gap-2">
+                <button onclick="closeAdminAuthModal()" class="w-1/2 border border-slate-200 text-slate-600 font-semibold py-2 rounded-xl text-xs">Отмена</button>
+                <button onclick="verifyAdminPin()" class="w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-xl text-xs">Войти</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA STORES ---
+        // Complete streets list for Bizhbulyak (Republic of Bashkortostan)
+        const BIZHBULYAK_STREETS = [
+            "ул. Акмуллы", "ул. Валидова", "ул. Гагарина", "ул. Зеленая", "ул. Кооперативная", 
+            "ул. Комсомольская", "ул. Ленина", "ул. Лесная", "ул. Мира", "ул. Молодежная", 
+            "ул. Новая", "ул. Первомайская", "ул. Победы", "ул. Полевая", "ул. Речная", 
+            "ул. Садовая", "ул. Солнечная", "ул. Социалистическая", "ул. Советская", "ул. Строителей", 
+            "ул. Центральная", "ул. Чкалова", "ул. Школьная", "пер. Дорожный", "пер. Клубный", "пер. Почтовый"
+        ];
+
+        // Fresh Milk Products Catalog with availability statuses
+        let PRODUCTS = [
+            {
+                id: 1,
+                name: "Молоко фермерское 3.2%",
+                volume: "1.0 л",
+                price: 85,
+                category: "Молоко",
+                status: "in_stock", // 'in_stock', 'soon', 'out_of_stock'
+                image: "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=400&q=80",
+                desc: "Натуральное цельное молоко дневной дойки с ферм Бижбуляка."
+            },
+            {
+                id: 2,
+                name: "Творог домашний 9%",
+                volume: "500 г",
+                price: 180,
+                category: "Творог",
+                status: "in_stock",
+                image: "https://images.unsplash.com/photo-1559561853-08451507cbe7?auto=format&fit=crop&w=400&q=80",
+                desc: "Мягкий зернистый творог с богатым сливочным вкусом."
+            },
+            {
+                id: 3,
+                name: "Сметана деревенская 20%",
+                volume: "350 г",
+                price: 130,
+                category: "Сметана",
+                status: "in_stock",
+                image: "https://images.unsplash.com/photo-1576186726115-4d51596775d1?auto=format&fit=crop&w=400&q=80",
+                desc: "Густая сметана из натуральных сливок."
+            },
+            {
+                id: 4,
+                name: "Масло сливочное ГОСТ 82.5%",
+                volume: "200 г",
+                price: 210,
+                category: "Масло",
+                status: "soon",
+                image: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=400&q=80",
+                desc: "Сладко-сливочное несоленое масло высокого качества."
+            },
+            {
+                id: 5,
+                name: "Кефир фермерский 2.5%",
+                volume: "1.0 л",
+                price: 90,
+                category: "Кисломолочные",
+                status: "in_stock",
+                image: "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=400&q=80",
+                desc: "Освежающий кефир на живых заквасочных грибках."
+            },
+            {
+                id: 6,
+                name: "Катык башкирский традиционный",
+                volume: "500 г",
+                price: 110,
+                category: "Кисломолочные",
+                status: "out_of_stock",
+                image: "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?auto=format&fit=crop&w=400&q=80",
+                desc: "Густой традиционный национальный напиток."
+            }
+        ];
+
+        // State Management
+        let cart = [];
+        let orders = [
+            {
+                id: 'MAX-8412',
+                date: '12 окт, 10:30',
+                items: [{ name: 'Молоко фермерское 3.2%', quantity: 2, price: 85 }],
+                total: 170,
+                customer: { name: 'Айгуль Сафина', phone: '+7 (927) 300-11-22', address: 'с. Бижбуляк, ул. Победы, д. 14' },
+                type: 'Доставка',
+                comment: 'Доставить до 14:00',
+                status: 'Принят в обработку'
+            }
+        ];
+        let currentUser = null;
+        let isAdminUnlocked = false;
+        let secretClickCounter = 0;
+
+        // --- APP INITIALIZATION ---
+        window.onload = function() {
+            populateStreetDropdowns();
+            renderProducts();
+            updateCartUI();
+            renderOrders();
+            renderAdminOrders();
+            renderAdminProducts();
+        };
+
+        function populateStreetDropdowns() {
+            const resSelect = document.getElementById('resStreet');
+            const authSelect = document.getElementById('authStreet');
+
+            BIZHBULYAK_STREETS.forEach(street => {
+                const opt1 = new Option(street, street);
+                const opt2 = new Option(street, street);
+                resSelect.add(opt1);
+                authSelect.add(opt2);
+            });
+        }
+
+        // --- CATALOG & USER SIDE ---
+        function renderProducts() {
+            const container = document.getElementById('productGrid');
+            container.innerHTML = PRODUCTS.map(product => {
+                let badgeHTML = '';
+                let buttonHTML = '';
+
+                if (product.status === 'in_stock') {
+                    badgeHTML = `<span class="bg-emerald-500/90 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">В наличии</span>`;
+                    buttonHTML = `
+                        <button onclick="addToCart(${product.id})" class="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-semibold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95">
+                            <i class="fa-solid fa-plus"></i> В корзину
+                        </button>
+                    `;
+                } else if (product.status === 'soon') {
+                    badgeHTML = `<span class="bg-amber-500/90 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">Скоро будет</span>`;
+                    buttonHTML = `
+                        <button disabled class="bg-slate-100 text-slate-400 font-medium text-xs px-3 py-2 rounded-xl cursor-not-allowed">
+                            Ожидается
+                        </button>
+                    `;
+                } else {
+                    badgeHTML = `<span class="bg-red-500/90 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">Нет в наличии</span>`;
+                    buttonHTML = `
+                        <button disabled class="bg-slate-100 text-slate-400 font-medium text-xs px-3 py-2 rounded-xl cursor-not-allowed">
+                            Закончился
+                        </button>
+                    `;
+                }
+
+                return `
+                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="h-40 overflow-hidden relative">
+                                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
+                                <div class="absolute top-2 left-2 flex gap-1">
+                                    ${badgeHTML}
+                                </div>
+                                <span class="absolute top-2 right-2 bg-slate-900/70 text-white text-xs px-2 py-0.5 rounded-md font-medium backdrop-blur-sm">
+                                    ${product.volume}
+                                </span>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-bold text-slate-800 text-base leading-snug">${product.name}</h4>
+                                <p class="text-slate-500 text-xs mt-1 leading-relaxed">${product.desc || ''}</p>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-0 flex items-center justify-between mt-2">
+                            <span class="text-xl font-extrabold text-blue-600">${product.price} ₽</span>
+                            ${buttonHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addToCart(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product || product.status !== 'in_stock') return;
+
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartUI();
+            showModal("Успешно", `Продукт "${product.name}" добавлен в корзину.`);
+        }
+
+        function updateCartQuantity(productId, delta) {
+            const item = cart.find(item => item.id === productId);
+            if (!item) return;
+
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            }
+            updateCartUI();
+        }
+
+        function clearCart() {
+            cart = [];
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItemsContainer');
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            const badgeNav = document.getElementById('cartBadgeNav');
+            const badgeMobile = document.getElementById('cartBadgeMobile');
+
+            if (totalCount > 0) {
+                badgeNav.innerText = totalCount;
+                badgeNav.classList.remove('hidden');
+                badgeMobile.innerText = totalCount;
+                badgeMobile.classList.remove('hidden');
+            } else {
+                badgeNav.classList.add('hidden');
+                badgeMobile.classList.add('hidden');
+            }
+
+            document.getElementById('cartTotalPrice').innerText = `${totalPrice} ₽`;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-400 space-y-3">
+                        <i class="fa-solid fa-basket-shopping text-4xl"></i>
+                        <p class="text-sm">Ваша корзина пока пуста.</p>
+                        <button onclick="switchTab('catalog')" class="text-xs bg-blue-50 text-blue-600 px-3 py-2 rounded-xl font-semibold">
+                            Перейти к продуктам
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="${item.image}" alt="${item.name}" class="w-14 h-14 rounded-xl object-cover shrink-0">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm leading-tight">${item.name}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">${item.price} ₽ / шт.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 shrink-0">
+                        <div class="flex items-center bg-slate-100 rounded-xl px-2 py-1 space-x-2">
+                            <button onclick="updateCartQuantity(${item.id}, -1)" class="text-slate-600 hover:text-blue-600 font-bold px-1.5">-</button>
+                            <span class="text-xs font-bold text-slate-800">${item.quantity}</span>
+                            <button onclick="updateCartQuantity(${item.id}, 1)" class="text-slate-600 hover:text-blue-600 font-bold px-1.5">+</button>
+                        </div>
+                        <span class="font-extrabold text-sm text-slate-800 min-w-[50px] text-right">${item.price * item.quantity} ₽</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleReservationSubmit(e) {
+            e.preventDefault();
+
+            if (cart.length === 0) {
+                showModal("Ошибка", "Корзина пуста! Добавьте продукты перед бронированием.");
+                return;
+            }
+
+            const name = document.getElementById('resName').value;
+            const phone = document.getElementById('resPhone').value;
+            const street = document.getElementById('resStreet').value;
+            const house = document.getElementById('resHouse').value;
+            const deliveryType = document.querySelector('input[name="deliveryType"]:checked').value;
+            const comment = document.getElementById('resComment').value;
+
+            const newOrder = {
+                id: 'MAX-' + Math.floor(1000 + Math.random() * 9000),
+                date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+                items: [...cart],
+                total: cart.reduce((sum, i) => sum + (i.price * i.quantity), 0),
+                customer: { name, phone, address: `с. Бижбуляк, ${street}, ${house}` },
+                type: deliveryType,
+                comment,
+                status: 'Принят в обработку'
+            };
+
+            orders.unshift(newOrder);
+            cart = [];
+            updateCartUI();
+            renderOrders();
+            renderAdminOrders();
+
+            showModal(
+                "Бронь успешно создана!", 
+                `Номер брони: ${newOrder.id}. Менеджер свяжется с вами по номеру ${phone} для подтверждения.`
+            );
+
+            switchTab('orders');
+        }
+
+        function renderOrders() {
+            const container = document.getElementById('ordersList');
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-400 space-y-2">
+                        <i class="fa-solid fa-receipt text-4xl"></i>
+                        <p class="text-sm">У вас пока нет сохраненных бронирований.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => `
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex justify-between items-start border-b pb-3">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800">${order.id}</span>
+                                <span class="text-xs bg-blue-100 text-blue-700 font-semibold px-2.5 py-0.5 rounded-full">${order.status}</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-0.5">${order.date} • ${order.type}</p>
+                        </div>
+                        <span class="text-lg font-black text-blue-600">${order.total} ₽</span>
+                    </div>
+
+                    <div class="text-xs text-slate-600 space-y-1">
+                        <p><strong>Получатель:</strong> ${order.customer.name} (${order.customer.phone})</p>
+                        <p><strong>Адрес:</strong> ${order.customer.address}</p>
+                        ${order.comment ? `<p><strong>Комментарий:</strong> ${order.comment}</p>` : ''}
+                    </div>
+
+                    <div class="bg-slate-50 p-3 rounded-xl space-y-1">
+                        <p class="text-xs font-semibold text-slate-500 mb-1">Состав брони:</p>
+                        ${order.items.map(item => `
+                            <div class="flex justify-between text-xs text-slate-700">
+                                <span>${item.name} x ${item.quantity}</span>
+                                <span>${item.price * item.quantity} ₽</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const phone = document.getElementById('authPhone').value;
+            const name = document.getElementById('authName').value;
+            const street = document.getElementById('authStreet').value;
+
+            currentUser = {
+                name,
+                phone,
+                address: `с. Бижбуляк, ${street}`
+            };
+
+            // Auto-fill checkout fields
+            document.getElementById('resName').value = name;
+            document.getElementById('resPhone').value = phone;
+            document.getElementById('resStreet').value = street;
+
+            updateProfileUI();
+            showModal("Авторизация успешна", `Добро пожаловать, ${name}!`);
+        }
+
+        function updateProfileUI() {
+            const authView = document.getElementById('authView');
+            const profileView = document.getElementById('profileView');
+
+            if (currentUser) {
+                authView.classList.add('hidden');
+                profileView.classList.remove('hidden');
+
+                document.getElementById('profileAvatar').innerText = currentUser.name.charAt(0).toUpperCase();
+                document.getElementById('profileNameDisplay').innerText = currentUser.name;
+                document.getElementById('profilePhoneDisplay').innerText = currentUser.phone;
+                document.getElementById('profileAddressDisplay').innerText = currentUser.address;
+            } else {
+                authView.classList.remove('hidden');
+                profileView.classList.add('hidden');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            updateProfileUI();
+            showModal("Выход", "Вы вышли из своего профиля.");
+        }
+
+        // --- STREAMING_CHUNK:Implementing Secret Admin Panel Logic... ---
+        // Hidden Admin Trigger (Click logo 3 times)
+        function handleSecretAdminClick() {
+            secretClickCounter++;
+            if (secretClickCounter >= 3) {
+                secretClickCounter = 0;
+                document.getElementById('adminAuthModal').classList.remove('hidden');
+            }
+        }
+
+        function closeAdminAuthModal() {
+            document.getElementById('adminAuthModal').classList.add('hidden');
+            document.getElementById('adminPinInput').value = '';
+        }
+
+        function verifyAdminPin() {
+            const pin = document.getElementById('adminPinInput').value;
+            if (pin === '1234') { // Secret PIN code
+                isAdminUnlocked = true;
+                closeAdminAuthModal();
+                document.getElementById('nav-admin').classList.remove('hidden');
+                switchTab('admin');
+                showModal("Админ-режим включен", "Добро пожаловать в панель управления!");
+            } else {
+                showModal("Ошибка доступа", "Неверный PIN-код!");
+            }
+        }
+
+        function lockAdmin() {
+            isAdminUnlocked = false;
+            document.getElementById('nav-admin').classList.add('hidden');
+            switchTab('catalog');
+            showModal("Выход из админки", "Панель администратора заблокирована.");
+        }
+
+        function switchAdminSubTab(subTab) {
+            document.getElementById('adminSubTab-orders').classList.add('hidden');
+            document.getElementById('adminSubTab-products').classList.add('hidden');
+
+            document.getElementById('adminSubNav-orders').className = "px-4 py-2 rounded-xl text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300";
+            document.getElementById('adminSubNav-products').className = "px-4 py-2 rounded-xl text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300";
+
+            if (subTab === 'orders') {
+                document.getElementById('adminSubTab-orders').classList.remove('hidden');
+                document.getElementById('adminSubNav-orders').className = "px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white";
+            } else {
+                document.getElementById('adminSubTab-products').classList.remove('hidden');
+                document.getElementById('adminSubNav-products').className = "px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white";
+            }
+        }
+
+        function renderAdminOrders() {
+            const container = document.getElementById('adminOrdersList');
+            document.getElementById('adminOrdersCount').innerText = orders.length;
+
+            if (orders.length === 0) {
+                container.innerHTML = `<div class="p-4 bg-white rounded-xl text-center text-xs text-slate-500">Заказов нет</div>`;
+                return;
+            }
+
+            container.innerHTML = orders.map((order, idx) => `
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex flex-wrap justify-between items-center gap-2 border-b pb-3">
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-base">${order.id}</span>
+                            <span class="text-xs text-slate-400 ms-2">${order.date}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-semibold text-slate-500">Статус:</label>
+                            <select onchange="updateOrderStatus('${order.id}', this.value)" class="text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 bg-purple-50 text-purple-800">
+                                <option value="Принят в обработку" ${order.status === 'Принят в обработку' ? 'selected' : ''}>Принят в обработку</option>
+                                <option value="В доставке" ${order.status === 'В доставке' ? 'selected' : ''}>В доставке / Готов</option>
+                                <option value="Выполнен" ${order.status === 'Выполнен' ? 'selected' : ''}>Выполнен</option>
+                                <option value="Отклонен" ${order.status === 'Отклонен' ? 'selected' : ''}>Отклонен</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-slate-700">
+                        <div><strong>Покупатель:</strong> ${order.customer.name}</div>
+                        <div><strong>Телефон:</strong> ${order.customer.phone}</div>
+                        <div class="md:col-span-2"><strong>Адрес:</strong> ${order.customer.address}</div>
+                        <div><strong>Тип:</strong> ${order.type}</div>
+                        <div><strong>Итого:</strong> <span class="font-bold text-blue-600 text-sm">${order.total} ₽</span></div>
+                    </div>
+
+                    <div class="bg-slate-50 p-3 rounded-xl space-y-1">
+                        <p class="text-[11px] font-bold text-slate-500">Заказанные позиции:</p>
+                        ${order.items.map(item => `
+                            <div class="flex justify-between text-xs text-slate-700">
+                                <span>${item.name} x ${item.quantity}</span>
+                                <span>${item.price * item.quantity} ₽</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = newStatus;
+                renderOrders();
+                showModal("Статус обновлен", `Заказ ${orderId} теперь имеет статус "${newStatus}".`);
+            }
+        }
+
+        function renderAdminProducts() {
+            const container = document.getElementById('adminProductsList');
+
+            container.innerHTML = PRODUCTS.map(product => `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="${product.image}" alt="${product.name}" class="w-12 h-12 rounded-xl object-cover shrink-0">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">${product.name}</h4>
+                            <p class="text-xs text-slate-400">${product.volume} • ${product.price} ₽ • ${product.category}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <label class="text-xs text-slate-500 font-semibold">Наличие:</label>
+                        <select onchange="updateProductStock(${product.id}, this.value)" class="text-xs p-2 rounded-xl border border-slate-300 bg-slate-50 font-semibold">
+                            <option value="in_stock" ${product.status === 'in_stock' ? 'selected' : ''}>В наличии</option>
+                            <option value="soon" ${product.status === 'soon' ? 'selected' : ''}>Скоро будет</option>
+                            <option value="out_of_stock" ${product.status === 'out_of_stock' ? 'selected' : ''}>Нет в наличии</option>
+                        </select>
+
+                        <button onclick="deleteProduct(${product.id})" class="text-xs text-red-600 hover:bg-red-50 p-2 rounded-xl border border-red-200 transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateProductStock(productId, status) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (product) {
+                product.status = status;
+                renderProducts();
+                showModal("Обновлено", `Статус товара "${product.name}" изменен.`);
+            }
+        }
+
+        function deleteProduct(productId) {
+            PRODUCTS = PRODUCTS.filter(p => p.id !== productId);
+            renderProducts();
+            renderAdminProducts();
+            showModal("Удалено", "Товар успешно удален из каталога.");
+        }
+
+        function handleAddProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('newProdName').value;
+            const volume = document.getElementById('newProdVolume').value;
+            const price = parseFloat(document.getElementById('newProdPrice').value);
+            const category = document.getElementById('newProdCategory').value;
+            const img = document.getElementById('newProdImg').value || "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=400&q=80";
+            const desc = document.getElementById('newProdDesc').value;
+
+            const newProd = {
+                id: Date.now(),
+                name,
+                volume,
+                price,
+                category,
+                status: 'in_stock',
+                image: img,
+                desc
+            };
+
+            PRODUCTS.unshift(newProd);
+            renderProducts();
+            renderAdminProducts();
+            document.getElementById('addProductForm').reset();
+            showModal("Товар добавлен", `"${name}" появился в каталоге!`);
+        }
+
+        // --- NAVIGATION HELPERS ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('text-blue-600', 'bg-blue-50', 'font-semibold');
+                el.classList.add('text-slate-600');
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('text-blue-600', 'bg-blue-50', 'font-semibold');
+                activeNav.classList.remove('text-slate-600');
+            }
+        }
+
+        function showModal(title, message) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
