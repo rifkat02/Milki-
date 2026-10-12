@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" id="appHtml" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Макс Доставка - Молочные продукты Бижбуляк</title>
+    <title id="appPageTitle">Макс Доставка - Молочные продукты Бижбуляк</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -28,76 +33,98 @@
             background: #cbd5e1;
             border-radius: 4px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 h-screen flex flex-col md:flex-row overflow-hidden">
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 h-screen flex flex-col md:flex-row overflow-hidden transition-colors duration-200">
 
     <!-- Mobile Header -->
-    <div class="md:hidden bg-blue-600 text-white p-4 flex justify-between items-center shadow-md shrink-0 z-30">
+    <div class="md:hidden bg-blue-600 dark:bg-slate-800 text-white p-4 flex justify-between items-center shadow-md shrink-0 z-30 transition-colors">
         <div id="mobileHeaderBrand" class="flex items-center space-x-3 cursor-pointer select-none">
-            <div class="bg-white text-blue-600 p-2 rounded-xl font-bold text-xl flex items-center justify-center w-10 h-10 shadow-sm">
-                <i class="fa-solid fa-bottle-droplet"></i>
+            <div id="mobileLogoContainer" class="bg-white text-blue-600 p-2 rounded-xl font-bold text-xl flex items-center justify-center w-10 h-10 shadow-sm overflow-hidden">
+                <i class="fa-solid fa-bottle-droplet" id="mobileLogoIcon"></i>
             </div>
             <div>
-                <h1 class="font-bold text-lg leading-tight">Макс Доставка</h1>
-                <p class="text-xs text-blue-100">с. Бижбуляк, РБ</p>
+                <h1 id="mobileBrandTitle" class="font-bold text-lg leading-tight">Макс Доставка</h1>
+                <p class="text-xs text-blue-100 dark:text-slate-400">с. Бижбуляк, РБ</p>
             </div>
         </div>
-        <button id="mobileCartBtn" class="relative p-2.5 bg-blue-700 rounded-xl active:scale-95 transition cursor-pointer">
-            <i class="fa-solid fa-cart-shopping text-lg"></i>
-            <span id="cartBadgeMobile" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">0</span>
-        </button>
+        
+        <div class="flex items-center gap-2">
+            <!-- Кнопка Поделиться -->
+            <a href="https://max.ru/se14609213_1_bot" target="_blank" class="p-2.5 bg-blue-700 dark:bg-slate-700 rounded-xl active:scale-95 transition text-white" title="Поделиться ботом">
+                <i class="fa-solid fa-share-nodes text-lg"></i>
+            </a>
+            <!-- Мобильная корзина -->
+            <button id="mobileCartBtn" class="relative p-2.5 bg-blue-700 dark:bg-slate-700 rounded-xl active:scale-95 transition cursor-pointer">
+                <i class="fa-solid fa-cart-shopping text-lg"></i>
+                <span id="cartBadgeMobile" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">0</span>
+            </button>
+        </div>
     </div>
 
     <!-- Sidebar Navigation -->
-    <aside class="w-full md:w-80 bg-white border-r border-slate-200 flex flex-col shrink-0 md:h-full z-20">
+    <aside class="w-full md:w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col shrink-0 md:h-full z-20 transition-colors">
         <!-- Brand Header (Desktop) -->
-        <div id="desktopHeaderBrand" class="hidden md:flex items-center space-x-3 p-5 border-b border-slate-100 bg-blue-600 text-white select-none cursor-pointer">
-            <div class="bg-white text-blue-600 p-3 rounded-2xl font-black text-2xl shadow-sm flex items-center justify-center w-12 h-12">
-                <i class="fa-solid fa-bottle-droplet"></i>
+        <div id="desktopHeaderBrand" class="hidden md:flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-700 bg-blue-600 dark:bg-slate-800 text-white select-none cursor-pointer">
+            <div class="flex items-center space-x-3">
+                <div id="desktopLogoContainer" class="bg-white text-blue-600 p-3 rounded-2xl font-black text-2xl shadow-sm flex items-center justify-center w-12 h-12 overflow-hidden">
+                    <i class="fa-solid fa-bottle-droplet" id="desktopLogoIcon"></i>
+                </div>
+                <div>
+                    <h1 id="desktopBrandTitle" class="font-bold text-xl tracking-tight">Макс Доставка</h1>
+                    <p class="text-xs text-blue-100 dark:text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-location-dot text-xs"></i> Бижбулякский район
+                    </p>
+                </div>
             </div>
-            <div>
-                <h1 class="font-bold text-xl tracking-tight">Макс Доставка</h1>
-                <p class="text-xs text-blue-100 flex items-center gap-1">
-                    <i class="fa-solid fa-location-dot text-xs"></i> Бижбулякский район
-                </p>
-            </div>
+            <!-- Поделиться Desktop -->
+            <a href="https://max.ru/se14609213_1_bot" target="_blank" class="p-2 bg-blue-700 dark:bg-slate-700 hover:bg-blue-800 rounded-xl transition text-white text-xs" title="Поделиться ботом">
+                <i class="fa-solid fa-share-nodes"></i>
+            </a>
+        </div>
+
+        <!-- Переключатель Темы (Свайп/Тоггл) -->
+        <div class="p-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                <i class="fa-solid fa-moon text-blue-600 dark:text-amber-400"></i> Темный режим
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="themeToggle" class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
         </div>
 
         <!-- Navigation Links -->
-        <nav class="flex md:flex-col justify-around md:justify-start p-2 md:p-4 gap-1 border-t md:border-t-0 border-slate-200 bg-white fixed bottom-0 left-0 right-0 md:relative z-40 shadow-lg md:shadow-none">
-            <button data-tab="catalog" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-blue-600 bg-blue-50 font-semibold w-full cursor-pointer">
+        <nav class="flex md:flex-col justify-around md:justify-start p-2 md:p-4 gap-1 border-t md:border-t-0 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 fixed bottom-0 left-0 right-0 md:relative z-40 shadow-lg md:shadow-none">
+            <button data-tab="catalog" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-blue-600 bg-blue-50 dark:bg-slate-700 dark:text-blue-400 font-semibold w-full cursor-pointer">
                 <i class="fa-solid fa-store text-lg"></i>
                 <span class="text-[11px] md:text-base">Каталог</span>
             </button>
-            <button data-tab="cart" class="nav-item flex flex-col md:flex-row items-center justify-between px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full relative cursor-pointer">
+            <button data-tab="cart" class="nav-item flex flex-col md:flex-row items-center justify-between px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 w-full relative cursor-pointer">
                 <div class="flex flex-col md:flex-row items-center gap-2 md:gap-3">
                     <i class="fa-solid fa-basket-shopping text-lg"></i>
                     <span class="text-[11px] md:text-base">Бронь</span>
                 </div>
                 <span id="cartBadgeNav" class="hidden bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
             </button>
-            <button data-tab="orders" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full cursor-pointer">
+            <button data-tab="orders" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 w-full cursor-pointer">
                 <i class="fa-solid fa-clock-rotate-left text-lg"></i>
                 <span class="text-[11px] md:text-base">Заказы</span>
             </button>
-            <button data-tab="profile" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 hover:bg-slate-50 w-full cursor-pointer">
+            <button data-tab="profile" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 w-full cursor-pointer">
                 <i class="fa-solid fa-user text-lg"></i>
                 <span class="text-[11px] md:text-base">Профиль</span>
             </button>
             <!-- Hidden Admin Button -->
-            <button id="navAdminBtn" data-tab="admin" class="nav-item hidden flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-purple-700 bg-purple-50 font-bold w-full cursor-pointer">
+            <button id="navAdminBtn" data-tab="admin" class="nav-item hidden flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-purple-700 bg-purple-50 dark:bg-purple-900/40 dark:text-purple-300 font-bold w-full cursor-pointer">
                 <i class="fa-solid fa-user-shield text-lg"></i>
                 <span class="text-[11px] md:text-base">Админка</span>
             </button>
         </nav>
 
         <!-- Sidebar Info Footer (Desktop) -->
-        <div class="hidden md:block mt-auto p-4 m-4 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs text-slate-500">
-            <div class="flex items-center gap-2 text-slate-700 font-semibold mb-1">
+        <div class="hidden md:block mt-auto p-4 m-4 bg-slate-50 dark:bg-slate-700/50 rounded-2xl border border-slate-200/80 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400">
+            <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 font-semibold mb-1">
                 <i class="fa-solid fa-truck-fast text-blue-600"></i> График доставки:
             </div>
             <p>Ежедневно: 08:00 - 20:00</p>
@@ -106,22 +133,22 @@
     </aside>
 
     <!-- Main Content Area -->
-    <main class="flex-1 bg-slate-50 overflow-y-auto pb-48 md:pb-12 p-4 md:p-8">
+    <main class="flex-1 bg-slate-50 dark:bg-slate-900 overflow-y-auto pb-48 md:pb-12 p-4 md:p-8 transition-colors">
         <div class="max-w-4xl mx-auto">
 
             <!-- TAB 1: Catalog View -->
             <section id="tab-catalog" class="tab-content block space-y-6">
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
+                <div id="heroBanner" class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
                     <div class="relative z-10 max-w-xl">
                         <span class="bg-blue-500/40 text-blue-100 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Экологически чисто</span>
-                        <h2 class="text-2xl md:text-4xl font-extrabold mt-2 mb-2">Натуральное молоко и продукты</h2>
+                        <h2 id="bannerTitle" class="text-2xl md:text-4xl font-extrabold mt-2 mb-2">Натуральное молоко и продукты</h2>
                         <p class="text-blue-100 text-sm md:text-base">Доставим до вашего дома в Бижбуляке или забронируйте для самовывоза.</p>
                     </div>
                     <i class="fa-solid fa-cow text-white/10 text-9xl absolute -right-6 -bottom-8 pointer-events-none"></i>
                 </div>
 
                 <div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-whiskey-glass text-blue-600"></i> Свежая продукция
                     </h3>
                     <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -132,12 +159,12 @@
 
             <!-- TAB 2: Cart & Reservation View -->
             <section id="tab-cart" class="tab-content hidden space-y-6">
-                <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-slate-800">Корзина и Бронирование</h2>
-                        <p class="text-sm text-slate-500">Оформите быстрый заказ продукции</p>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Корзина и Бронирование</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Оформите быстрый заказ продукции</p>
                     </div>
-                    <button id="clearCartBtn" class="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-lg transition cursor-pointer">
+                    <button id="clearCartBtn" class="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1 bg-red-50 dark:bg-red-900/30 px-3 py-1.5 rounded-lg transition cursor-pointer">
                         <i class="fa-solid fa-trash-can"></i> Очистить
                     </button>
                 </div>
@@ -149,19 +176,18 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 md:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 h-fit mb-16 md:mb-0">
-                        <h3 class="font-bold text-lg text-slate-800 border-b pb-2">Детали бронирования</h3>
+                    <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4 h-fit mb-16 md:mb-0">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100 border-b dark:border-slate-700 pb-2">Детали бронирования</h3>
                         
                         <form id="reservationForm" class="space-y-3">
-                            <!-- Способ получения -->
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Способ получения *</label>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Способ получения *</label>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-bold">
+                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200">
                                         <input type="radio" name="deliveryType" value="pickup" checked onchange="updateCartUI()">
                                         <i class="fa-solid fa-store text-blue-600"></i> Самовывоз
                                     </label>
-                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-bold">
+                                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200">
                                         <input type="radio" name="deliveryType" value="delivery" onchange="updateCartUI()">
                                         <i class="fa-solid fa-truck-fast text-blue-600"></i> Доставка
                                     </label>
@@ -169,19 +195,18 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">ФИО Получателя *</label>
-                                <input type="text" id="resName" required placeholder="Иван Иванов" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">ФИО Получателя *</label>
+                                <input type="text" id="resName" required placeholder="Иван Иванов" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Номер телефона *</label>
-                                <input type="tel" id="resPhone" required placeholder="+7 (9XX) XXX-XX-XX" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Номер телефона *</label>
+                                <input type="tel" id="resPhone" required placeholder="+7 (9XX) XXX-XX-XX" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                             </div>
 
-                            <!-- Выбор улицы с. Бижбуляк -->
                             <div id="addressBlock">
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Улица в с. Бижбуляк *</label>
-                                <select id="resStreetSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white mb-2">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Улица в с. Бижбуляк *</label>
+                                <select id="resStreetSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 mb-2">
                                     <option value="ул. Ленина">ул. Ленина</option>
                                     <option value="ул. Центральная">ул. Центральная</option>
                                     <option value="ул. Победы">ул. Победы</option>
@@ -191,18 +216,18 @@
                                     <option value="ул. Молодежная">ул. Молодежная</option>
                                     <option value="custom">-- Ввести свою улицу --</option>
                                 </select>
-                                <input type="text" id="resStreetCustom" placeholder="Введите название улицы" class="hidden w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm mb-2">
+                                <input type="text" id="resStreetCustom" placeholder="Введите название улицы" class="hidden w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm mb-2">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Дом / Квартира *</label>
-                                <input type="text" id="resHouse" required placeholder="д. 12, кв. 4" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Дом / Квартира *</label>
+                                <input type="text" id="resHouse" required placeholder="д. 12, кв. 4" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                             </div>
 
-                            <div class="pt-4 border-t mt-3">
+                            <div class="pt-4 border-t dark:border-slate-700 mt-3">
                                 <div class="flex justify-between items-center mb-4">
-                                    <span class="font-semibold text-slate-600 text-sm">Итого:</span>
-                                    <span id="cartTotalPrice" class="text-2xl font-black text-blue-600">0 ₽</span>
+                                    <span class="font-semibold text-slate-600 dark:text-slate-400 text-sm">Итого:</span>
+                                    <span id="cartTotalPrice" class="text-2xl font-black text-blue-600 dark:text-blue-400">0 ₽</span>
                                 </div>
                                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2 text-base cursor-pointer">
                                     <i class="fa-solid fa-check"></i> Забронировать
@@ -216,8 +241,8 @@
             <!-- TAB 3: Orders History -->
             <section id="tab-orders" class="tab-content hidden space-y-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Мои бронирования</h2>
-                    <p class="text-sm text-slate-500">История ваших заказов</p>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Мои бронирования</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">История ваших заказов</p>
                 </div>
                 <div id="ordersList" class="space-y-4">
                     <p class="text-slate-400 text-sm">У вас пока нет активных заказов.</p>
@@ -226,26 +251,26 @@
 
             <!-- TAB 4: User Profile / Auth -->
             <section id="tab-profile" class="tab-content hidden space-y-6">
-                <div class="max-w-lg mx-auto bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="max-w-lg mx-auto bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm">
                     <!-- Not Logged In View -->
                     <div id="authView" class="space-y-6">
                         <div class="text-center space-y-2">
                             <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl font-black shadow-md shadow-blue-500/30">
                                 <i class="fa-solid fa-bottle-droplet"></i>
                             </div>
-                            <h2 class="text-2xl font-bold text-slate-800">Вход в систему</h2>
-                            <p class="text-xs text-slate-500">Авторизуйтесь через официальный аккаунт MAX ID</p>
+                            <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Вход в систему</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Авторизуйтесь через официальный аккаунт MAX ID</p>
                         </div>
 
                         <!-- Real MAX ID Login Button -->
-                        <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl space-y-3">
+                        <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-700/50 border border-blue-100 dark:border-slate-600 rounded-2xl space-y-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-sm">
                                     M
                                 </div>
                                 <div class="text-left">
-                                    <p class="font-bold text-sm text-slate-800 leading-tight">Вход через MAX ID</p>
-                                    <p class="text-[11px] text-slate-500">Бесшовная авторизация мессенджера</p>
+                                    <p class="font-bold text-sm text-slate-800 dark:text-slate-100 leading-tight">Вход через MAX ID</p>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400">Бесшовная авторизация мессенджера</p>
                                 </div>
                             </div>
                             <button type="button" id="maxLoginBtn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm cursor-pointer">
@@ -256,36 +281,35 @@
 
                     <!-- Logged In View -->
                     <div id="profileView" class="hidden space-y-6">
-                        <div class="flex items-center space-x-4 border-b pb-4">
+                        <div class="flex items-center space-x-4 border-b dark:border-slate-700 pb-4">
                             <div class="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-2xl" id="profileAvatar">
                                 М
                             </div>
                             <div>
-                                <h3 id="profileNameDisplay" class="text-xl font-bold text-slate-800">Пользователь</h3>
-                                <p id="profilePhoneDisplay" class="text-sm text-slate-500">MAX ID</p>
-                                <span class="inline-block mt-1 text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-semibold">Подтвержден MAX ID</span>
+                                <h3 id="profileNameDisplay" class="text-xl font-bold text-slate-800 dark:text-slate-100">Пользователь</h3>
+                                <p id="profilePhoneDisplay" class="text-sm text-slate-500 dark:text-slate-400">MAX ID</p>
+                                <span id="profileStatusBadge" class="inline-block mt-1 text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-semibold">Подтвержден MAX ID</span>
                             </div>
                         </div>
 
                         <!-- ПОЛЕ ДЛЯ СОХРАНЕНИЯ НОМЕРА ТЕЛЕФОНА -->
-                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-                            <label class="block text-xs font-bold text-slate-700">Номер телефона для доставки:</label>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Номер телефона для доставки:</label>
                             <div class="flex gap-2">
-                                <input type="tel" id="userSavedPhone" placeholder="+7 (9XX) XXX-XX-XX" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+                                <input type="tel" id="userSavedPhone" placeholder="+7 (9XX) XXX-XX-XX" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                                 <button type="button" id="savePhoneBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer">
                                     Сохранить
                                 </button>
                             </div>
-                            <p class="text-[11px] text-slate-500">Номер сохранится в памяти устройства для быстрого оформления доставки.</p>
                         </div>
 
                         <div class="space-y-3 text-sm">
-                            <div class="flex justify-between py-2 border-b">
-                                <span class="text-slate-500">Регион:</span>
-                                <span class="font-medium text-slate-800">с. Бижбуляк, РБ</span>
+                            <div class="flex justify-between py-2 border-b dark:border-slate-700">
+                                <span class="text-slate-500 dark:text-slate-400">Регион:</span>
+                                <span class="font-medium text-slate-800 dark:text-slate-200">с. Бижбуляк, РБ</span>
                             </div>
                         </div>
-                        <button type="button" id="logoutBtn" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2 cursor-pointer">
+                        <button type="button" id="logoutBtn" class="w-full bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2 cursor-pointer">
                             <i class="fa-solid fa-right-from-bracket"></i> Выйти из аккаунта
                         </button>
                     </div>
@@ -295,15 +319,15 @@
             <!-- TAB 5: ADMIN PANEL -->
             <section id="tab-admin" class="tab-content hidden space-y-6">
                 
-                <!-- ФОРМА ВВОДА PIN-КОДА -->
-                <div id="adminAuthLock" class="max-w-md mx-auto bg-white p-6 md:p-8 rounded-3xl border border-purple-200 shadow-md text-center space-y-4">
-                    <div class="w-16 h-16 bg-purple-100 text-purple-700 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black">
+                <!-- ВВОД PIN-КОДА -->
+                <div id="adminAuthLock" class="max-w-md mx-auto bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl border border-purple-200 dark:border-purple-900/50 shadow-md text-center space-y-4">
+                    <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black">
                         <i class="fa-solid fa-lock"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800">Доступ в админку</h2>
-                    <p class="text-xs text-slate-500">Введите PIN-код для входа в режим продавца</p>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Доступ в админку</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Введите PIN-код для входа в режим продавца</p>
                     <div class="space-y-3">
-                        <input type="password" id="adminPinInput" maxlength="10" placeholder="****" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-center font-bold text-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                        <input type="password" id="adminPinInput" maxlength="10" placeholder="****" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-center font-bold text-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                         <button type="button" id="adminPinSubmitBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition text-sm cursor-pointer shadow-md">
                             Войти в панель
                         </button>
@@ -312,44 +336,96 @@
 
                 <!-- ОСНОВНОЙ ИНТЕРФЕЙС АДМИНКИ -->
                 <div id="adminMainContent" class="hidden space-y-6">
-                    <div class="flex items-center justify-between border-b border-purple-200 pb-4">
+                    <div class="flex items-center justify-between border-b border-purple-200 dark:border-purple-900 pb-4">
                         <div>
-                            <h2 class="text-2xl font-bold text-purple-900">Панель администратора</h2>
-                            <p class="text-sm text-purple-600">Управление молочными товарами, ценами и заказами</p>
+                            <h2 class="text-2xl font-bold text-purple-900 dark:text-purple-300">Панель администратора</h2>
+                            <p class="text-sm text-purple-600 dark:text-purple-400">Управление молочными товарами, пользователями и дизайном</p>
                         </div>
-                        <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">Режим продавца</span>
+                        <span class="bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300 text-xs font-bold px-3 py-1 rounded-full">Режим продавца</span>
                     </div>
 
-                    <!-- Настройки: Смена PIN-кода -->
-                    <div class="bg-white p-5 md:p-6 rounded-3xl border border-purple-100 shadow-sm space-y-3">
-                        <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+                    <!-- Раздел 1: Настройки бренда и логотипа -->
+                    <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-3xl border border-purple-100 dark:border-slate-700 shadow-sm space-y-4">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-pen-nib text-purple-600"></i> Смена Имени и Логотипа
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Название сервиса</label>
+                                <input type="text" id="adminBrandNameInput" placeholder="Макс Доставка" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Загрузить логотип (Локально)</label>
+                                <input type="file" id="adminLogoFileInput" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700">
+                            </div>
+                        </div>
+                        <button type="button" id="saveBrandSettingsBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition cursor-pointer shadow-sm">
+                            Сохранить бренд
+                        </button>
+                    </div>
+
+                    <!-- Раздел 2: Выбор дизайна приложения -->
+                    <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-3xl border border-purple-100 dark:border-slate-700 shadow-sm space-y-3">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-palette text-purple-600"></i> Смена дизайна приложения
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                            <button type="button" onclick="setAppThemeDesign('blue')" class="p-3 rounded-2xl border-2 border-blue-600 bg-blue-50 text-blue-800 font-bold text-xs flex items-center justify-between">
+                                <span>Синий (Классик)</span>
+                                <i class="fa-solid fa-circle-check text-blue-600"></i>
+                            </button>
+                            <button type="button" onclick="setAppThemeDesign('emerald')" class="p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 text-emerald-800 font-bold text-xs flex items-center justify-between">
+                                <span>Изумрудный</span>
+                            </button>
+                            <button type="button" onclick="setAppThemeDesign('purple')" class="p-3 rounded-2xl border-2 border-purple-600 bg-purple-50 text-purple-800 font-bold text-xs flex items-center justify-between">
+                                <span>Фиолетовый</span>
+                            </button>
+                            <button type="button" onclick="setAppThemeDesign('slate')" class="p-3 rounded-2xl border-2 border-slate-700 bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-between">
+                                <span>Тёмно-серый</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Раздел 3: Зарегистрированные юзеры и блокировка -->
+                    <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-3xl border border-purple-100 dark:border-slate-700 shadow-sm space-y-4">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-purple-600"></i> Зарегистрированные пользователи
+                        </h3>
+                        <div id="adminUsersContainer" class="space-y-3">
+                            <!-- Динамическая загрузка юзеров -->
+                        </div>
+                    </div>
+
+                    <!-- Раздел 4: Смена PIN-кода -->
+                    <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-3xl border border-purple-100 dark:border-slate-700 shadow-sm space-y-3">
+                        <h3 class="font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             <i class="fa-solid fa-key text-purple-600"></i> Смена PIN-кода администратора
                         </h3>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <input type="password" id="oldPinInput" placeholder="Старый PIN" class="px-3 py-2 rounded-xl border border-slate-300 text-sm">
-                            <input type="password" id="newPinInput" placeholder="Новый PIN" class="px-3 py-2 rounded-xl border border-slate-300 text-sm">
+                            <input type="password" id="oldPinInput" placeholder="Старый PIN" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
+                            <input type="password" id="newPinInput" placeholder="Новый PIN" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                             <button type="button" id="changePinBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-xl transition text-xs cursor-pointer shadow-sm">
                                 Изменить PIN
                             </button>
                         </div>
                     </div>
 
-                    <!-- Добавление / Редактирование товара -->
-                    <div class="bg-white p-5 md:p-6 rounded-3xl border border-purple-100 shadow-sm space-y-4">
-                        <h3 id="adminFormHeader" class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                    <!-- Раздел 5: Добавление / Редактирование товара -->
+                    <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-3xl border border-purple-100 dark:border-slate-700 shadow-sm space-y-4">
+                        <h3 id="adminFormHeader" class="font-bold text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             <i class="fa-solid fa-plus text-purple-600"></i> Добавить новый молочный товар
                         </h3>
                         <form id="addProductForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <input type="hidden" id="editProductId" value="">
                             
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Название товара *</label>
-                                <input type="text" id="adminProdTitle" required placeholder="Например, Молоко 1.5л" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Название товара *</label>
+                                <input type="text" id="adminProdTitle" required placeholder="Например, Молоко 1.5л" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Статус наличия *</label>
-                                <select id="adminProdStatus" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Статус наличия *</label>
+                                <select id="adminProdStatus" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100">
                                     <option value="in_stock">Есть в наличии</option>
                                     <option value="out_of_stock">Нет в наличии</option>
                                     <option value="coming_soon">Скоро будет</option>
@@ -357,34 +433,33 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Цена при САМОВЫВОЗЕ (₽) *</label>
-                                <input type="number" id="adminProdPricePickup" required placeholder="120" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Цена при САМОВЫВОЗЕ (₽) *</label>
+                                <input type="number" id="adminProdPricePickup" required placeholder="120" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Цена С ДОСТАВКОЙ (₽) *</label>
-                                <input type="number" id="adminProdPriceDelivery" required placeholder="150" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Цена С ДОСТАВКОЙ (₽) *</label>
+                                <input type="number" id="adminProdPriceDelivery" required placeholder="150" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                             </div>
 
                             <div class="md:col-span-2">
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Описание товара</label>
-                                <input type="text" id="adminProdDesc" placeholder="Свежее домашнее молоко" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
-                            </div>
-
-                            <!-- Картинка товара: Ссылка или Загрузка файла -->
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Ссылка на картинку (URL)</label>
-                                <input type="url" id="adminProdImgUrl" placeholder="https://..." class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Описание товара</label>
+                                <input type="text" id="adminProdDesc" placeholder="Свежее домашнее молоко" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Или загрузить с устройства</label>
-                                <input type="file" id="adminProdImgFile" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Ссылка на картинку (URL)</label>
+                                <input type="url" id="adminProdImgUrl" placeholder="https://..." class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Иконка (если нет картинки)</label>
-                                <select id="adminProdIcon" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Или загрузить с устройства</label>
+                                <input type="file" id="adminProdImgFile" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Иконка (если нет картинки)</label>
+                                <select id="adminProdIcon" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100">
                                     <option value="fa-bottle-droplet">Бутылка (Молоко/Кефир)</option>
                                     <option value="fa-jar">Банка (Сметана)</option>
                                     <option value="fa-cheese">Сыр/Творог</option>
@@ -396,7 +471,7 @@
                                 <button type="submit" id="saveProdBtn" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl transition text-sm cursor-pointer shadow-md">
                                     Сохранить товар
                                 </button>
-                                <button type="button" id="cancelEditBtn" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-4 rounded-xl transition text-sm cursor-pointer">
+                                <button type="button" id="cancelEditBtn" class="hidden bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2.5 px-4 rounded-xl transition text-sm cursor-pointer">
                                     Отмена
                                 </button>
                             </div>
@@ -404,22 +479,22 @@
                     </div>
 
                     <!-- Управление имеющимися товарами -->
-                    <div class="bg-white p-5 md:p-6 rounded-3xl border border-purple-100 shadow-sm space-y-4">
-                        <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                    <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-3xl border border-purple-100 dark:border-slate-700 shadow-sm space-y-4">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             <i class="fa-solid fa-boxes-stacked text-purple-600"></i> Список товаров в каталоге
                         </h3>
                         <div id="adminProductsContainer" class="space-y-3">
-                            <!-- Динамический список товаров для админа -->
+                            <!-- Динамический список товаров -->
                         </div>
                     </div>
 
                     <!-- Все бронирования -->
                     <div class="space-y-4">
-                        <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             <i class="fa-solid fa-list-check text-purple-600"></i> Входящие бронирования
                         </h3>
                         <div id="adminOrdersContainer" class="space-y-4">
-                            <!-- Динамическая загрузка броней -->
+                            <!-- Загрузка броней -->
                         </div>
                     </div>
                 </div>
@@ -435,6 +510,7 @@
         let secretClickCount = 0;
         let isAdminAuthorized = false;
         let currentUploadedImageData = '';
+        let currentLogoData = '';
 
         const defaultProducts = [
             { id: 1, title: 'Молоко деревенское 1.5л', pricePickup: 120, priceDelivery: 150, desc: 'Свежее натуральное молоко.', icon: 'fa-bottle-droplet', bg: 'bg-blue-50', color: 'text-blue-600', status: 'in_stock', image: '' },
@@ -451,6 +527,8 @@
                 console.warn('MAX ready exception:', e);
             }
 
+            initTheme();
+            applySavedBrandSettings();
             initEventListeners();
             loadCatalog();
 
@@ -461,6 +539,46 @@
                 console.error(e);
             }
         });
+
+        // Инициализация темного/светлого режима
+        function initTheme() {
+            const savedTheme = localStorage.getItem('app_theme') || 'light';
+            const toggle = document.getElementById('themeToggle');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (toggle) toggle.checked = true;
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (toggle) toggle.checked = false;
+            }
+
+            if (toggle) {
+                toggle.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('app_theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('app_theme', 'light');
+                    }
+                });
+            }
+        }
+
+        // Применение имени сервиса и логотипа
+        function applySavedBrandSettings() {
+            const brandName = localStorage.getItem('app_brand_name') || 'Макс Доставка';
+            const logo = localStorage.getItem('app_logo_data');
+
+            document.getElementById('mobileBrandTitle').innerText = brandName;
+            document.getElementById('desktopBrandTitle').innerText = brandName;
+            document.getElementById('adminBrandNameInput').value = brandName;
+
+            if (logo) {
+                document.getElementById('mobileLogoContainer').innerHTML = `<img src="${logo}" class="w-full h-full object-cover">`;
+                document.getElementById('desktopLogoContainer').innerHTML = `<img src="${logo}" class="w-full h-full object-cover">`;
+            }
+        }
 
         function initEventListeners() {
             document.querySelectorAll('[data-tab]').forEach(btn => {
@@ -502,22 +620,35 @@
             const cancelEditBtn = document.getElementById('cancelEditBtn');
             if (cancelEditBtn) cancelEditBtn.addEventListener('click', resetAdminProductForm);
 
-            // Обработка загрузки файла изображения с устройства
+            const saveBrandSettingsBtn = document.getElementById('saveBrandSettingsBtn');
+            if (saveBrandSettingsBtn) saveBrandSettingsBtn.addEventListener('click', saveBrandSettings);
+
+            // Обработка загрузки файла товара
             const fileInput = document.getElementById('adminProdImgFile');
             if (fileInput) {
                 fileInput.addEventListener('change', (e) => {
                     const file = e.target.files[0];
                     if (file) {
                         const reader = new FileReader();
-                        reader.onload = (event) => {
-                            currentUploadedImageData = event.target.result;
-                        };
+                        reader.onload = (event) => currentUploadedImageData = event.target.result;
                         reader.readAsDataURL(file);
                     }
                 });
             }
 
-            // Переключатель улиц с. Бижбуляк
+            // Обработка файла логотипа
+            const logoInput = document.getElementById('adminLogoFileInput');
+            if (logoInput) {
+                logoInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => currentLogoData = event.target.result;
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
             const resStreetSelect = document.getElementById('resStreetSelect');
             if (resStreetSelect) {
                 resStreetSelect.addEventListener('change', (e) => {
@@ -533,7 +664,19 @@
             }
         }
 
-        // Авторизация в админке по PIN
+        function saveBrandSettings() {
+            const name = document.getElementById('adminBrandNameInput').value.trim();
+            if (name) localStorage.setItem('app_brand_name', name);
+            if (currentLogoData) localStorage.setItem('app_logo_data', currentLogoData);
+            applySavedBrandSettings();
+            alert('Настройки бренда сохранены!');
+        }
+
+        function setAppThemeDesign(themeName) {
+            localStorage.setItem('app_design_theme', themeName);
+            alert(`Дизайн сохранен (${themeName})!`);
+        }
+
         function verifyAdminPin() {
             const inputPin = document.getElementById('adminPinInput').value.trim();
             const currentPin = localStorage.getItem('max_admin_pin') || '1234';
@@ -544,6 +687,7 @@
                 document.getElementById('adminMainContent').classList.remove('hidden');
                 renderAdminOrders();
                 renderAdminProductsList();
+                renderAdminUsersList();
             } else {
                 alert('Неверный PIN-код!');
             }
@@ -558,7 +702,6 @@
                 alert('Старый PIN-код введен неверно!');
                 return;
             }
-
             if (!newPin || newPin.length < 4) {
                 alert('Новый PIN-код должен содержать минимум 4 символа!');
                 return;
@@ -582,7 +725,6 @@
             }
         }
 
-        // Отрисовка каталога для клиентов
         function loadCatalog() {
             let products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
             const grid = document.getElementById('productGrid');
@@ -611,21 +753,21 @@
                 }
 
                 grid.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
                         <div>
                             ${imgHtml}
                             <div class="flex justify-between items-start gap-2 mb-1">
-                                <h4 class="font-bold text-slate-800 text-sm leading-snug">${p.title}</h4>
+                                <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm leading-snug">${p.title}</h4>
                                 ${statusBadge}
                             </div>
-                            <p class="text-xs text-slate-500 mt-1">${p.desc || ''}</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${p.desc || ''}</p>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
                             <div>
-                                <div class="text-xs text-slate-500">Самовывоз: <strong class="text-slate-800">${p.pricePickup} ₽</strong></div>
-                                <div class="text-xs text-blue-600 font-semibold">С доставкой: <strong>${p.priceDelivery} ₽</strong></div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">Самовывоз: <strong class="text-slate-800 dark:text-slate-200">${p.pricePickup} ₽</strong></div>
+                                <div class="text-xs text-blue-600 dark:text-blue-400 font-semibold">С доставкой: <strong>${p.priceDelivery} ₽</strong></div>
                             </div>
-                            <button type="button" onclick="addToCart(${p.id})" ${!isAvailable ? 'disabled' : ''} class="${isAvailable ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-300 cursor-not-allowed'} text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer">
+                            <button type="button" onclick="addToCart(${p.id})" ${!isAvailable ? 'disabled' : ''} class="${isAvailable ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-300 dark:bg-slate-700 cursor-not-allowed'} text-white px-3.5 py-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer">
                                 В корзину
                             </button>
                         </div>
@@ -634,7 +776,6 @@
             });
         }
 
-        // Рендер списка товаров в самой админке для редактирования и удаления
         function renderAdminProductsList() {
             const container = document.getElementById('adminProductsContainer');
             if (!container) return;
@@ -644,19 +785,19 @@
             container.innerHTML = '';
             products.forEach(p => {
                 container.innerHTML += `
-                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                    <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-700/50 p-3 rounded-2xl border border-slate-200 dark:border-slate-700">
                         <div class="flex items-center gap-3">
                             ${p.image ? `<img src="${p.image}" class="w-10 h-10 object-cover rounded-lg">` : `<div class="w-10 h-10 bg-purple-100 text-purple-700 flex items-center justify-center rounded-lg"><i class="fa-solid ${p.icon || 'fa-bottle-droplet'}"></i></div>`}
                             <div>
-                                <h4 class="font-bold text-sm text-slate-800">${p.title}</h4>
-                                <p class="text-xs text-slate-500">Самовывоз: ${p.pricePickup}₽ | Доставка: ${p.priceDelivery}₽</p>
+                                <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">${p.title}</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Самовывоз: ${p.pricePickup}₽ | Доставка: ${p.priceDelivery}₽</p>
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button type="button" onclick="editProduct(${p.id})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-blue-100 transition cursor-pointer">
+                            <button type="button" onclick="editProduct(${p.id})" class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
-                            <button type="button" onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-red-100 transition cursor-pointer">
+                            <button type="button" onclick="deleteProduct(${p.id})" class="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -665,7 +806,6 @@
             });
         }
 
-        // Сохранение/Обновление товара в админке
         function handleAddProductSubmit(e) {
             e.preventDefault();
             const editId = document.getElementById('editProductId').value;
@@ -682,7 +822,6 @@
             let products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
 
             if (editId) {
-                // Редактирование
                 const idx = products.findIndex(p => p.id === Number(editId));
                 if (idx !== -1) {
                     products[idx] = {
@@ -697,7 +836,6 @@
                     };
                 }
             } else {
-                // Добавление нового
                 products.push({
                     id: Date.now(),
                     title,
@@ -719,7 +857,6 @@
             alert('Товар успешно сохранен!');
         }
 
-        // Наполнение формы для редактирования
         function editProduct(id) {
             let products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
             const prod = products.find(p => p.id === id);
@@ -757,6 +894,49 @@
             renderAdminProductsList();
         }
 
+        // Рендер пользователей в админке
+        function renderAdminUsersList() {
+            const container = document.getElementById('adminUsersContainer');
+            if (!container) return;
+
+            let users = JSON.parse(localStorage.getItem('max_all_registered_users')) || [];
+            let blockedUsers = JSON.parse(localStorage.getItem('max_blocked_users')) || [];
+
+            if (users.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-sm">Зарегистрированных пользователей пока нет.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            users.forEach(u => {
+                let isBlocked = blockedUsers.includes(u.id);
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-700/50 p-3 rounded-2xl border border-slate-200 dark:border-slate-700">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">${u.name}</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">ID: ${u.id || 'N/A'} | Тел: ${u.phone || 'Не указан'}</p>
+                        </div>
+                        <button type="button" onclick="toggleBlockUser('${u.id}')" class="${isBlocked ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'} text-white text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">
+                            ${isBlocked ? 'Разблокировать' : 'Заблокировать'}
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleBlockUser(userId) {
+            let blockedUsers = JSON.parse(localStorage.getItem('max_blocked_users')) || [];
+            if (blockedUsers.includes(userId)) {
+                blockedUsers = blockedUsers.filter(id => id !== userId);
+                alert('Пользователь разблокирован.');
+            } else {
+                blockedUsers.push(userId);
+                alert('Пользователь заблокирован.');
+            }
+            localStorage.setItem('max_blocked_users', JSON.stringify(blockedUsers));
+            renderAdminUsersList();
+        }
+
         function renderAdminOrders() {
             const container = document.getElementById('adminOrdersContainer');
             if (!container) return;
@@ -773,26 +953,58 @@
                 let itemsList = order.items.map(i => `${i.title} (${i.qty} шт.)`).join(', ');
 
                 container.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                        <div class="flex justify-between items-start border-b pb-2">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
+                        <div class="flex justify-between items-start border-b dark:border-slate-700 pb-2">
                             <div>
-                                <h4 class="font-bold text-slate-800 text-base">${order.name}</h4>
-                                <p class="text-xs text-slate-500">${order.date}</p>
+                                <h4 class="font-bold text-slate-800 dark:text-slate-100 text-base">${order.name}</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">${order.date}</p>
                             </div>
-                            <span class="font-black text-purple-700 text-base">${order.total} ₽</span>
+                            <span class="font-black text-purple-700 dark:text-purple-300 text-base">${order.total} ₽</span>
                         </div>
                         
-                        <div class="text-xs text-slate-600 space-y-1">
+                        <div class="text-xs text-slate-600 dark:text-slate-300 space-y-1">
                             <p><i class="fa-solid fa-truck-fast text-slate-400"></i> <strong>Способ:</strong> ${order.deliveryType === 'delivery' ? 'Доставка' : 'Самовывоз'}</p>
                             <p><i class="fa-solid fa-location-dot text-slate-400"></i> <strong>Адрес:</strong> с. Бижбуляк, ${order.street}, ${order.house}</p>
                             <p><i class="fa-solid fa-basket-shopping text-slate-400"></i> <strong>Товары:</strong> ${itemsList}</p>
                         </div>
 
-                        <div class="flex gap-2 pt-2 border-t">
+                        <div class="flex gap-2 pt-2 border-t dark:border-slate-700">
                             <a href="tel:${order.phone}" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition">
                                 <i class="fa-solid fa-phone"></i> Позвонить (${order.phone})
                             </a>
                         </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Рендер персональной истории заказов в ЛК Клиента
+        function renderUserOrders() {
+            const container = document.getElementById('ordersList');
+            if (!container) return;
+
+            let currentUser = JSON.parse(localStorage.getItem('max_real_user') || '{}');
+            let allOrders = JSON.parse(localStorage.getItem('max_all_orders')) || [];
+
+            // Фильтруем заказы текущего юзера
+            let myOrders = allOrders.filter(o => o.userId === currentUser.id || o.phone === currentUser.phone);
+
+            if (myOrders.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-sm">У вас пока нет активных заказов.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            myOrders.slice().reverse().forEach(order => {
+                let itemsList = order.items.map(i => `${i.title} × ${i.qty}`).join(', ');
+                container.innerHTML += `
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2">
+                        <div class="flex justify-between items-center border-b dark:border-slate-700 pb-2">
+                            <span class="text-xs text-slate-500 dark:text-slate-400">${order.date}</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400 text-sm">${order.total} ₽</span>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-800 dark:text-slate-100">${itemsList}</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400"><i class="fa-solid fa-location-dot"></i> с. Бижбуляк, ${order.street}, ${order.house} (${order.deliveryType === 'delivery' ? 'Доставка' : 'Самовывоз'})</p>
                     </div>
                 `;
             });
@@ -807,6 +1019,14 @@
                     phone: savedData.phone || '',
                     id: user.id || ''
                 };
+
+                // Проверка на заблокированного пользователя
+                let blockedUsers = JSON.parse(localStorage.getItem('max_blocked_users')) || [];
+                if (blockedUsers.includes(String(user.id))) {
+                    alert('Ваш аккаунт заблокирован администратором.');
+                    return;
+                }
+
                 loginUserToUI(userData);
             }
         }
@@ -894,6 +1114,13 @@
             if (phoneInput && userData.phone) phoneInput.value = userData.phone;
 
             localStorage.setItem('max_real_user', JSON.stringify(userData));
+
+            // Сохраняем пользователя в список зарегистрированных для админки
+            let users = JSON.parse(localStorage.getItem('max_all_registered_users')) || [];
+            if (!users.some(u => u.id === userData.id)) {
+                users.push(userData);
+                localStorage.setItem('max_all_registered_users', JSON.stringify(users));
+            }
         }
 
         function saveUserPhone() {
@@ -966,15 +1193,15 @@
                 totalCount += item.qty;
 
                 container.innerHTML += `
-                    <div class="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-200">
+                    <div class="flex items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700">
                         <div>
-                            <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
-                            <p class="text-xs text-blue-600 font-semibold">${currentPrice} ₽ × ${item.qty} ${isDelivery ? '(цена с доставкой)' : '(самовывоз)'}</p>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">${item.title}</h4>
+                            <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold">${currentPrice} ₽ × ${item.qty} ${isDelivery ? '(цена с доставкой)' : '(самовывоз)'}</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button type="button" class="decrease-btn w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-sm cursor-pointer" data-index="${index}">-</button>
+                            <button type="button" class="decrease-btn w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 font-bold text-sm cursor-pointer" data-index="${index}">-</button>
                             <span class="text-sm font-bold w-4 text-center">${item.qty}</span>
-                            <button type="button" class="increase-btn w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-sm cursor-pointer" data-index="${index}">+</button>
+                            <button type="button" class="increase-btn w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 font-bold text-sm cursor-pointer" data-index="${index}">+</button>
                         </div>
                     </div>
                 `;
@@ -1018,6 +1245,8 @@
                 return;
             }
 
+            let currentUser = JSON.parse(localStorage.getItem('max_real_user') || '{}');
+
             const deliveryType = document.querySelector('input[name="deliveryType"]:checked').value;
             const name = document.getElementById('resName').value;
             const phone = document.getElementById('resPhone').value;
@@ -1033,6 +1262,7 @@
 
             const newOrder = {
                 id: Date.now(),
+                userId: currentUser.id || '',
                 deliveryType,
                 name,
                 phone,
@@ -1073,9 +1303,14 @@
                 activeNav.classList.remove('text-slate-600');
             }
 
+            if (tabId === 'orders') {
+                renderUserOrders();
+            }
+
             if (tabId === 'admin' && isAdminAuthorized) {
                 renderAdminOrders();
                 renderAdminProductsList();
+                renderAdminUsersList();
             }
         }
     </script>
