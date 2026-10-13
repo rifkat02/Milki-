@@ -28,7 +28,7 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col pb-24 md:pb-0">
 
-    <!-- Красивое всплывающее уведомление (Тост) -->
+    <!-- Всплывающее уведомление (Тост) -->
     <div id="appToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-semibold opacity-0 pointer-events-none transition-all duration-300 max-w-xs text-center border border-slate-700">
     </div>
 
@@ -226,14 +226,25 @@
                     </div>
                 </section>
 
-                <!-- TAB 3: Orders -->
+                <!-- TAB 3: Orders (С кнопочками переключения статусов) -->
                 <section id="tab-orders" class="tab-content hidden space-y-6">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Мои бронирования</h2>
                         <p class="text-sm text-slate-500">История ваших заказов</p>
                     </div>
+
+                    <!-- Кнопочки фильтрации броней -->
+                    <div class="flex gap-2 bg-slate-200 dark:bg-slate-800 p-1 rounded-2xl w-fit">
+                        <button type="button" id="userOrderTabPending" onclick="switchUserOrderFilter('pending')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-sm">
+                            <i class="fa-solid fa-spinner mr-1"></i> В работе
+                        </button>
+                        <button type="button" id="userOrderTabCompleted" onclick="switchUserOrderFilter('completed')" class="px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300">
+                            <i class="fa-solid fa-circle-check mr-1"></i> Исполненные
+                        </button>
+                    </div>
+
                     <div id="ordersList" class="space-y-4">
-                        <p class="text-slate-400 text-sm">У вас пока нет активных заказов.</p>
+                        <p class="text-slate-400 text-sm">У вас пока нет заказов.</p>
                     </div>
                 </section>
 
@@ -273,7 +284,7 @@
                     </div>
                 </section>
 
-                <!-- TAB 5: Admin Panel (С организованным боковым меню настроек) -->
+                <!-- TAB 5: Admin Panel -->
                 <section id="tab-admin" class="tab-content hidden space-y-6">
                     <div id="adminAuthLock" class="max-w-md mx-auto bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl border border-purple-200 shadow-md text-center space-y-4">
                         <div class="w-16 h-16 bg-purple-100 text-purple-700 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black">
@@ -293,7 +304,7 @@
                             <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">Продавец</span>
                         </div>
 
-                        <!-- Новая сетка с боковым меню админки -->
+                        <!-- Сетка с боковым меню админки -->
                         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                             <!-- Боковое меню разделов админки -->
                             <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl border border-purple-100 dark:border-slate-700 shadow-sm h-fit space-y-1">
@@ -367,9 +378,21 @@
                                     <div id="adminProductsContainer" class="space-y-3 mt-4"></div>
                                 </div>
 
-                                <!-- Раздел 6: Бронирования -->
+                                <!-- Раздел 6: Бронирования (Отдельно В работе и Исполненные) -->
                                 <div id="admin-sec-orders" class="admin-section hidden space-y-4">
-                                    <h3 class="font-bold text-lg text-purple-900 dark:text-purple-300">Входящие бронирования</h3>
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="font-bold text-lg text-purple-900 dark:text-purple-300">Входящие бронирования</h3>
+                                    </div>
+                                    
+                                    <div class="flex gap-2 bg-slate-200 dark:bg-slate-800 p-1 rounded-2xl w-fit">
+                                        <button type="button" id="adminOrderTabPending" onclick="switchAdminOrderFilter('pending')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-sm">
+                                            В работе
+                                        </button>
+                                        <button type="button" id="adminOrderTabCompleted" onclick="switchAdminOrderFilter('completed')" class="px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300">
+                                            Исполненные
+                                        </button>
+                                    </div>
+
                                     <div id="adminOrdersContainer" class="space-y-4"></div>
                                 </div>
 
@@ -404,6 +427,8 @@
         var cart = [];
         var secretClickCount = 0;
         var isAdminAuthorized = false;
+        var currentAdminOrderFilter = 'pending';
+        var currentUserOrderFilter = 'pending';
 
         var defaultProducts = [
             { id: 1, title: 'Молоко деревенское 1.5л', pricePickup: 120, priceDelivery: 150, desc: 'Свежее натуральное молоко.', icon: 'fa-bottle-droplet', status: 'in_stock' },
@@ -472,7 +497,6 @@
                 });
             }
 
-            // Переключение вкладок в админке через боковое меню
             var adminNavBtns = document.querySelectorAll('[data-admin-tab]');
             for (var a = 0; a < adminNavBtns.length; a++) {
                 adminNavBtns[a].addEventListener('click', function() {
@@ -651,6 +675,7 @@
             if (phoneInput && userData.phone) phoneInput.value = userData.phone;
 
             localStorage.setItem('max_real_user', JSON.stringify(userData));
+            renderUserOrders();
         }
 
         function saveUserPhone() {
@@ -661,6 +686,7 @@
             localStorage.setItem('max_real_user', JSON.stringify(saved));
             document.getElementById('profilePhoneDisplay').innerText = saved.phone;
             showToast('Телефон сохранен!');
+            renderUserOrders();
         }
 
         function handleLogout() {
@@ -668,6 +694,7 @@
             document.getElementById('profileView').classList.add('hidden');
             document.getElementById('authView').classList.remove('hidden');
             showToast('Вы вышли из аккаунта');
+            renderUserOrders();
         }
 
         function verifyAdminPin() {
@@ -807,20 +834,136 @@
             }
         }
 
+        // Управление заказами в админке
+        function switchAdminOrderFilter(status) {
+            currentAdminOrderFilter = status;
+            var btnPending = document.getElementById('adminOrderTabPending');
+            var btnCompleted = document.getElementById('adminOrderTabCompleted');
+            
+            if (status === 'pending') {
+                btnPending.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-sm";
+                btnCompleted.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300";
+            } else {
+                btnCompleted.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-sm";
+                btnPending.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300";
+            }
+            renderAdminOrders();
+        }
+
+        function changeOrderStatus(orderId, newStatus) {
+            var orders = JSON.parse(localStorage.getItem('max_all_orders')) || [];
+            for (var i = 0; i < orders.length; i++) {
+                if (orders[i].id === orderId) {
+                    orders[i].status = newStatus;
+                    break;
+                }
+            }
+            localStorage.setItem('max_all_orders', JSON.stringify(orders));
+            showToast(newStatus === 'completed' ? 'Заказ исполнен!' : 'Заказ вернут в работу');
+            renderAdminOrders();
+            renderUserOrders();
+        }
+
         function renderAdminOrders() {
             var container = document.getElementById('adminOrdersContainer');
             if (!container) return;
             var orders = JSON.parse(localStorage.getItem('max_all_orders')) || [];
-            if (orders.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 text-sm">Входящих бронирований нет.</p>';
+            
+            var filteredOrders = [];
+            for (var k = 0; k < orders.length; k++) {
+                var st = orders[k].status || 'pending';
+                if (st === currentAdminOrderFilter) {
+                    filteredOrders.push(orders[k]);
+                }
+            }
+
+            if (filteredOrders.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-sm">Заказов в этой категории нет.</p>';
                 return;
             }
+
             container.innerHTML = '';
-            for (var i = orders.length - 1; i >= 0; i--) {
-                var o = orders[i];
+            for (var i = filteredOrders.length - 1; i >= 0; i--) {
+                var o = filteredOrders[i];
+                var itemsText = [];
+                if (o.items) {
+                    for (var j = 0; j < o.items.length; j++) {
+                        itemsText.push(o.items[j].title + ' × ' + o.items[j].qty);
+                    }
+                }
+                
+                var actionBtn = o.status === 'completed' 
+                    ? '<button onclick="changeOrderStatus(' + o.id + ', \'pending\')" class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl font-bold">Вернуть в работу</button>'
+                    : '<button onclick="changeOrderStatus(' + o.id + ', \'completed\')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-bold">Исполнено</button>';
+
                 container.innerHTML += '<div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border shadow-sm space-y-2 text-xs">' +
-                    '<div class="flex justify-between font-bold"><span>' + o.name + ' (' + o.phone + ')</span><span>' + o.total + ' ₽</span></div>' +
-                    '<p class="text-slate-500">Адрес: с. Бижбуляк / Барш, ' + o.street + ', ' + o.house + '</p>' +
+                    '<div class="flex justify-between font-bold"><span>' + o.name + ' (' + o.phone + ')</span><span class="text-purple-600 font-extrabold">' + o.total + ' ₽</span></div>' +
+                    '<p class="text-slate-500"><i class="fa-solid fa-location-dot"></i> ' + o.street + ', ' + o.house + '</p>' +
+                    '<p class="text-slate-600 dark:text-slate-300 font-semibold">' + itemsText.join(', ') + '</p>' +
+                    '<div class="flex justify-between items-center pt-2 border-t mt-2">' +
+                        '<span class="text-[10px] text-slate-400">' + o.date + '</span>' +
+                        actionBtn +
+                    '</div>' +
+                '</div>';
+            }
+        }
+
+        // Фильтрация и вывод броней у пользователя
+        function switchUserOrderFilter(status) {
+            currentUserOrderFilter = status;
+            var btnPending = document.getElementById('userOrderTabPending');
+            var btnCompleted = document.getElementById('userOrderTabCompleted');
+            
+            if (status === 'pending') {
+                btnPending.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-sm";
+                btnCompleted.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300";
+            } else {
+                btnCompleted.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-sm";
+                btnPending.className = "px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300";
+            }
+            renderUserOrders();
+        }
+
+        function renderUserOrders() {
+            var container = document.getElementById('ordersList');
+            if (!container) return;
+
+            var allOrders = JSON.parse(localStorage.getItem('max_all_orders')) || [];
+
+            var filteredOrders = [];
+            for (var i = 0; i < allOrders.length; i++) {
+                var st = allOrders[i].status || 'pending';
+                if (st === currentUserOrderFilter) {
+                    filteredOrders.push(allOrders[i]);
+                }
+            }
+
+            if (filteredOrders.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-sm">Заказов в этой категории нет.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            for (var j = filteredOrders.length - 1; j >= 0; j--) {
+                var o = filteredOrders[j];
+                var itemsText = [];
+                if (o.items) {
+                    for (var k = 0; k < o.items.length; k++) {
+                        itemsText.push(o.items[k].title + ' × ' + o.items[k].qty);
+                    }
+                }
+                var statusBadge = o.status === 'completed'
+                    ? '<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Исполнен</span>'
+                    : '<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-1 rounded-full">В работе</span>';
+
+                container.innerHTML += '<div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border shadow-sm space-y-2 text-xs">' +
+                    '<div class="flex justify-between items-center border-b pb-2">' +
+                        '<span class="text-slate-400">' + o.date + '</span>' +
+                        statusBadge +
+                    '</div>' +
+                    '<p class="font-bold text-slate-800 dark:text-slate-100 text-sm">' + itemsText.join(', ') + '</p>' +
+                    '<p class="text-slate-500"><i class="fa-solid fa-location-dot"></i> ' + o.street + ', ' + o.house + '</p>' +
+                    '<div class="text-right font-black text-blue-600 text-base pt-1">' + o.total + ' ₽</div>' +
                 '</div>';
             }
         }
@@ -904,14 +1047,18 @@
                 totalSum += (isDelivery ? cart[i].priceDelivery : cart[i].pricePickup) * cart[i].qty;
             }
 
+            var currentUser = JSON.parse(localStorage.getItem('max_real_user') || '{}');
+
             var newOrder = {
                 id: Date.now(),
+                userId: currentUser.id || '',
                 name: name,
                 phone: phone,
                 street: street,
                 house: house,
                 items: cart.slice(),
                 total: totalSum,
+                status: 'pending',
                 date: new Date().toLocaleString('ru-RU')
             };
 
@@ -922,6 +1069,7 @@
             showToast('Бронь успешно оформлена!');
             cart = [];
             updateCartUI();
+            renderUserOrders();
             switchTab('orders');
         }
 
@@ -936,6 +1084,10 @@
                 nav[j].classList.add('text-slate-600');
             }
             document.querySelector('[data-tab="' + tabId + '"]').classList.add('bg-blue-50', 'text-blue-600', 'font-semibold');
+
+            if (tabId === 'orders') {
+                renderUserOrders();
+            }
 
             if (tabId === 'admin' && isAdminAuthorized) {
                 renderAdminOrders();
