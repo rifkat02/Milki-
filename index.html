@@ -21,10 +21,6 @@
         body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
-        button, a, input, select {
-            pointer-events: auto;
         }
         ::-webkit-scrollbar {
             width: 6px;
@@ -54,9 +50,11 @@
         </div>
         
         <div class="flex items-center gap-2">
+            <!-- Кнопка Поделиться -->
             <a href="https://max.ru/se14609213_1_bot" target="_blank" class="p-2.5 bg-blue-700 dark:bg-slate-700 rounded-xl active:scale-95 transition text-white" title="Поделиться ботом">
                 <i class="fa-solid fa-share-nodes text-lg"></i>
             </a>
+            <!-- Мобильная корзина -->
             <button id="mobileCartBtn" class="relative p-2.5 bg-blue-700 dark:bg-slate-700 rounded-xl active:scale-95 transition cursor-pointer">
                 <i class="fa-solid fa-cart-shopping text-lg"></i>
                 <span id="cartBadgeMobile" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">0</span>
@@ -66,6 +64,7 @@
 
     <!-- Sidebar Navigation -->
     <aside class="w-full md:w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col shrink-0 md:h-full z-20 transition-colors">
+        <!-- Brand Header (Desktop) -->
         <div id="desktopHeaderBrand" class="hidden md:flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-700 bg-blue-600 dark:bg-slate-800 text-white select-none cursor-pointer">
             <div class="flex items-center space-x-3">
                 <div id="desktopLogoContainer" class="bg-white text-blue-600 p-3 rounded-2xl font-black text-2xl shadow-sm flex items-center justify-center w-12 h-12 overflow-hidden">
@@ -78,11 +77,13 @@
                     </p>
                 </div>
             </div>
+            <!-- Поделиться Desktop -->
             <a href="https://max.ru/se14609213_1_bot" target="_blank" class="p-2 bg-blue-700 dark:bg-slate-700 hover:bg-blue-800 rounded-xl transition text-white text-xs" title="Поделиться ботом">
                 <i class="fa-solid fa-share-nodes"></i>
             </a>
         </div>
 
+        <!-- Переключатель Темы (Свайп/Тоггл) -->
         <div class="p-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
             <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
                 <i class="fa-solid fa-moon text-blue-600 dark:text-amber-400"></i> Темный режим
@@ -93,6 +94,7 @@
             </label>
         </div>
 
+        <!-- Navigation Links -->
         <nav class="flex md:flex-col justify-around md:justify-start p-2 md:p-4 gap-1 border-t md:border-t-0 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 fixed bottom-0 left-0 right-0 md:relative z-40 shadow-lg md:shadow-none">
             <button data-tab="catalog" class="nav-item flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-blue-600 bg-blue-50 dark:bg-slate-700 dark:text-blue-400 font-semibold w-full cursor-pointer">
                 <i class="fa-solid fa-store text-lg"></i>
@@ -113,12 +115,14 @@
                 <i class="fa-solid fa-user text-lg"></i>
                 <span class="text-[11px] md:text-base">Профиль</span>
             </button>
+            <!-- Hidden Admin Button -->
             <button id="navAdminBtn" data-tab="admin" class="nav-item hidden flex flex-col md:flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition text-purple-700 bg-purple-50 dark:bg-purple-900/40 dark:text-purple-300 font-bold w-full cursor-pointer">
                 <i class="fa-solid fa-user-shield text-lg"></i>
                 <span class="text-[11px] md:text-base">Админка</span>
             </button>
         </nav>
 
+        <!-- Sidebar Info Footer (Desktop) -->
         <div class="hidden md:block mt-auto p-4 m-4 bg-slate-50 dark:bg-slate-700/50 rounded-2xl border border-slate-200/80 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400">
             <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 font-semibold mb-1">
                 <i class="fa-solid fa-truck-fast text-blue-600"></i> График доставки:
@@ -180,11 +184,11 @@
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Способ получения *</label>
                                 <div class="grid grid-cols-2 gap-2">
                                     <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200">
-                                        <input type="radio" name="deliveryType" value="pickup" checked>
+                                        <input type="radio" name="deliveryType" value="pickup" checked onchange="updateCartUI()">
                                         <i class="fa-solid fa-store text-blue-600"></i> Самовывоз
                                     </label>
                                     <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200">
-                                        <input type="radio" name="deliveryType" value="delivery">
+                                        <input type="radio" name="deliveryType" value="delivery" onchange="updateCartUI()">
                                         <i class="fa-solid fa-truck-fast text-blue-600"></i> Доставка
                                     </label>
                                 </div>
@@ -248,6 +252,7 @@
             <!-- TAB 4: User Profile / Auth -->
             <section id="tab-profile" class="tab-content hidden space-y-6">
                 <div class="max-w-lg mx-auto bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <!-- Not Logged In View -->
                     <div id="authView" class="space-y-6">
                         <div class="text-center space-y-2">
                             <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl font-black shadow-md shadow-blue-500/30">
@@ -257,6 +262,7 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400">Авторизуйтесь через официальный аккаунт MAX ID</p>
                         </div>
 
+                        <!-- Real MAX ID Login Button -->
                         <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-700/50 border border-blue-100 dark:border-slate-600 rounded-2xl space-y-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-sm">
@@ -267,10 +273,4 @@
                                     <p class="text-[11px] text-slate-500 dark:text-slate-400">Бесшовная авторизация мессенджера</p>
                                 </div>
                             </div>
-                            <button type="button" id="maxLoginBtn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm cursor-pointer">
-                                <i class="fa-solid fa-shield-halved text-blue-200"></i> Войти с MAX ID
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="profileView" class="hidden 
+                            <button type="button" id="maxLoginBtn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-whit
