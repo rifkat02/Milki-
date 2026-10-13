@@ -540,7 +540,6 @@
             }
         });
 
-        // Инициализация темного/светлого режима
         function initTheme() {
             const savedTheme = localStorage.getItem('app_theme') || 'light';
             const toggle = document.getElementById('themeToggle');
@@ -565,7 +564,6 @@
             }
         }
 
-        // Применение имени сервиса и логотипа
         function applySavedBrandSettings() {
             const brandName = localStorage.getItem('app_brand_name') || 'Макс Доставка';
             const logo = localStorage.getItem('app_logo_data');
@@ -623,7 +621,6 @@
             const saveBrandSettingsBtn = document.getElementById('saveBrandSettingsBtn');
             if (saveBrandSettingsBtn) saveBrandSettingsBtn.addEventListener('click', saveBrandSettings);
 
-            // Обработка загрузки файла товара
             const fileInput = document.getElementById('adminProdImgFile');
             if (fileInput) {
                 fileInput.addEventListener('change', (e) => {
@@ -636,7 +633,6 @@
                 });
             }
 
-            // Обработка файла логотипа
             const logoInput = document.getElementById('adminLogoFileInput');
             if (logoInput) {
                 logoInput.addEventListener('change', (e) => {
@@ -663,6 +659,65 @@
                 });
             }
         }
+
+        // --- АВТОРИЗАЦИЯ И API С УЧЕТОМ НОВЫХ ПРАВИЛ ---
+        // Обновленный метод запросов с авторизационным заголовком Authorization: <access_token> вместо query-параметров
+        async function maxApiRequest(endpoint, options = {}) {
+            const accessToken = localStorage.getItem('max_bot_access_token') || '';
+            const initData = window.MAX?.WebApp?.initData || window.MAX?.initData || '';
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': accessToken ? `${accessToken}` : initData,
+                ...(options.headers || {})
+            };
+
+            try {
+                const response = await fetch(`https://api.max.ru/v1/${endpoint}`, {
+                    ...options,
+                    headers
+                });
+                return await response.json();
+            } catch (e) {
+                console.warn('API request fallback:', e);
+                return null;
+            }
+        }
+
+        function extractRealMaxUser() {
+            try {
+                let user = null;
+                const maxObj = window.MAX;
+                if (maxObj) {
+                    if (maxObj.initDataUnsafe?.user) user = maxObj.initDataUnsafe.user;
+                    else if (maxObj.WebApp?.initDataUnsafe?.user) user = maxObj.WebApp.initDataUnsafe.user;
+                }
+
+                if (!user) {
+                    const hash = window.location.hash.replace(/^#/, '');
+                    if (hash) {
+                        const hashParams = new URLSearchParams(hash);
+                        let webAppData = hashParams.get('WebAppData');
+                        if (webAppData) {
+                            let decodedWebAppData = decodeURIComponent(webAppData);
+                            let webAppParams = new URLSearchParams(decodedWebAppData);
+                            let userParam = webAppParams.get('user');
+                            if (userParam) {
+                                let decodedUser = userParam;
+                                for (let i = 0; i < 3; i++) {
+                                    try { decodedUser = decodeURIComponent(decodedUser); } catch (e) {}
+                                }
+                                user = JSON.parse(decodedUser);
+                            }
+                        }
+                    }
+                }
+                return user;
+            } catch (e) {
+                return null;
+            }
+        }
+        // ------------------------------------------------
 
         function saveBrandSettings() {
             const name = document.getElementById('adminBrandNameInput').value.trim();
@@ -894,7 +949,6 @@
             renderAdminProductsList();
         }
 
-        // Рендер пользователей в админке
         function renderAdminUsersList() {
             const container = document.getElementById('adminUsersContainer');
             if (!container) return;
@@ -978,7 +1032,6 @@
             });
         }
 
-        // Рендер персональной истории заказов в ЛК Клиента
         function renderUserOrders() {
             const container = document.getElementById('ordersList');
             if (!container) return;
@@ -986,7 +1039,6 @@
             let currentUser = JSON.parse(localStorage.getItem('max_real_user') || '{}');
             let allOrders = JSON.parse(localStorage.getItem('max_all_orders')) || [];
 
-            // Фильтруем заказы текущего юзера
             let myOrders = allOrders.filter(o => o.userId === currentUser.id || o.phone === currentUser.phone);
 
             if (myOrders.length === 0) {
@@ -1020,7 +1072,6 @@
                     id: user.id || ''
                 };
 
-                // Проверка на заблокированного пользователя
                 let blockedUsers = JSON.parse(localStorage.getItem('max_blocked_users')) || [];
                 if (blockedUsers.includes(String(user.id))) {
                     alert('Ваш аккаунт заблокирован администратором.');
@@ -1028,40 +1079,6 @@
                 }
 
                 loginUserToUI(userData);
-            }
-        }
-
-        function extractRealMaxUser() {
-            try {
-                let user = null;
-                const maxObj = window.MAX;
-                if (maxObj) {
-                    if (maxObj.initDataUnsafe?.user) user = maxObj.initDataUnsafe.user;
-                    else if (maxObj.WebApp?.initDataUnsafe?.user) user = maxObj.WebApp.initDataUnsafe.user;
-                }
-
-                if (!user) {
-                    const hash = window.location.hash.replace(/^#/, '');
-                    if (hash) {
-                        const hashParams = new URLSearchParams(hash);
-                        let webAppData = hashParams.get('WebAppData');
-                        if (webAppData) {
-                            let decodedWebAppData = decodeURIComponent(webAppData);
-                            let webAppParams = new URLSearchParams(decodedWebAppData);
-                            let userParam = webAppParams.get('user');
-                            if (userParam) {
-                                let decodedUser = userParam;
-                                for (let i = 0; i < 3; i++) {
-                                    try { decodedUser = decodeURIComponent(decodedUser); } catch (e) {}
-                                }
-                                user = JSON.parse(decodedUser);
-                            }
-                        }
-                    }
-                }
-                return user;
-            } catch (e) {
-                return null;
             }
         }
 
@@ -1115,7 +1132,6 @@
 
             localStorage.setItem('max_real_user', JSON.stringify(userData));
 
-            // Сохраняем пользователя в список зарегистрированных для админки
             let users = JSON.parse(localStorage.getItem('max_all_registered_users')) || [];
             if (!users.some(u => u.id === userData.id)) {
                 users.push(userData);
