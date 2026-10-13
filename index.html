@@ -28,7 +28,7 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col pb-24 md:pb-0">
 
-    <!-- Красивое всплывающее уведомление вместо системного alert с доменом -->
+    <!-- Красивое всплывающее уведомление (Тост) -->
     <div id="appToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-semibold opacity-0 pointer-events-none transition-all duration-300 max-w-xs text-center border border-slate-700">
     </div>
 
@@ -182,15 +182,29 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Улица в с. Бижбуляк *</label>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Адрес (Бижбуляк / Барш) *</label>
                                     <select id="resStreetSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 mb-2">
-                                        <option value="ул. Ленина">ул. Ленина</option>
-                                        <option value="ул. Центральная">ул. Центральная</option>
-                                        <option value="ул. Победы">ул. Победы</option>
-                                        <option value="ул. Советская">ул. Советская</option>
-                                        <option value="custom">-- Ввести свою улицу --</option>
+                                        <optgroup label="с. Бижбуляк">
+                                            <option value="с. Бижбуляк, ул. Ленина">ул. Ленина</option>
+                                            <option value="с. Бижбуляк, ул. Коммунистическая">ул. Коммунистическая</option>
+                                            <option value="с. Бижбуляк, ул. Победы">ул. Победы</option>
+                                            <option value="с. Бижбуляк, ул. Советская">ул. Советская</option>
+                                            <option value="с. Бижбуляк, ул. Мира">ул. Мира</option>
+                                            <option value="с. Бижбуляк, ул. Чапаева">ул. Чапаева</option>
+                                            <option value="с. Бижбуляк, ул. Гагарина">ул. Гагарина</option>
+                                            <option value="с. Бижбуляк, ул. Молодежная">ул. Молодежная</option>
+                                            <option value="с. Бижбуляк, ул. Садовая">ул. Садовая</option>
+                                            <option value="с. Бижбуляк, ул. Строителей">ул. Строителей</option>
+                                            <option value="с. Бижбуляк, ул. Октябрьская">ул. Октябрьская</option>
+                                        </optgroup>
+                                        <optgroup label="д. Барш">
+                                            <option value="д. Барш, ул. Центральная">ул. Центральная (Барш)</option>
+                                            <option value="д. Барш, ул. Школьная">ул. Школьная (Барш)</option>
+                                            <option value="д. Барш, ул. Молодежная">ул. Молодежная (Барш)</option>
+                                        </optgroup>
+                                        <option value="custom">-- Ввести свой вариант --</option>
                                     </select>
-                                    <input type="text" id="resStreetCustom" placeholder="Название улицы" class="hidden w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm mb-2">
+                                    <input type="text" id="resStreetCustom" placeholder="Введите название улицы и населенный пункт" class="hidden w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm mb-2">
                                 </div>
 
                                 <div>
@@ -259,7 +273,7 @@
                     </div>
                 </section>
 
-                <!-- TAB 5: Admin Panel -->
+                <!-- TAB 5: Admin Panel (С организованным боковым меню настроек) -->
                 <section id="tab-admin" class="tab-content hidden space-y-6">
                     <div id="adminAuthLock" class="max-w-md mx-auto bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl border border-purple-200 shadow-md text-center space-y-4">
                         <div class="w-16 h-16 bg-purple-100 text-purple-700 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black">
@@ -272,22 +286,96 @@
 
                     <div id="adminMainContent" class="hidden space-y-6">
                         <div class="flex items-center justify-between border-b pb-4">
-                            <h2 class="text-2xl font-bold text-purple-900 dark:text-purple-300">Админ-панель</h2>
+                            <div>
+                                <h2 class="text-2xl font-bold text-purple-900 dark:text-purple-300">Админ-панель</h2>
+                                <p class="text-xs text-purple-600 dark:text-purple-400">Панель управления магазином</p>
+                            </div>
                             <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">Продавец</span>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border shadow-sm space-y-4">
-                            <h3 class="font-bold text-lg">Настройки бренда</h3>
-                            <input type="text" id="adminBrandNameInput" placeholder="Макс Доставка" class="w-full px-3 py-2.5 rounded-xl border text-sm">
-                            <button type="button" id="saveBrandSettingsBtn" class="bg-purple-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs">Сохранить</button>
+
+                        <!-- Новая сетка с боковым меню админки -->
+                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                            <!-- Боковое меню разделов админки -->
+                            <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl border border-purple-100 dark:border-slate-700 shadow-sm h-fit space-y-1">
+                                <button type="button" data-admin-tab="brand" class="admin-nav-btn w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                                    <i class="fa-solid fa-pen-nib mr-2"></i> Бренд и Лого
+                                </button>
+                                <button type="button" data-admin-tab="design" class="admin-nav-btn w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
+                                    <i class="fa-solid fa-palette mr-2"></i> Дизайн
+                                </button>
+                                <button type="button" data-admin-tab="users" class="admin-nav-btn w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
+                                    <i class="fa-solid fa-users mr-2"></i> Пользователи
+                                </button>
+                                <button type="button" data-admin-tab="security" class="admin-nav-btn w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
+                                    <i class="fa-solid fa-key mr-2"></i> Смена PIN
+                                </button>
+                                <button type="button" data-admin-tab="products" class="admin-nav-btn w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
+                                    <i class="fa-solid fa-boxes-stacked mr-2"></i> Каталог товаров
+                                </button>
+                                <button type="button" data-admin-tab="orders" class="admin-nav-btn w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
+                                    <i class="fa-solid fa-list-check mr-2"></i> Бронирования
+                                </button>
+                            </div>
+
+                            <!-- Правая область с содержимым разделов -->
+                            <div class="lg:col-span-3 space-y-6">
+                                
+                                <!-- Раздел 1: Бренд -->
+                                <div id="admin-sec-brand" class="admin-section space-y-4 bg-white dark:bg-slate-800 p-5 rounded-3xl border shadow-sm">
+                                    <h3 class="font-bold text-lg">Название и Логотип</h3>
+                                    <input type="text" id="adminBrandNameInput" placeholder="Макс Доставка" class="w-full px-3 py-2.5 rounded-xl border text-sm">
+                                    <button type="button" id="saveBrandSettingsBtn" class="bg-purple-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs">Сохранить бренд</button>
+                                </div>
+
+                                <!-- Раздел 2: Дизайн -->
+                                <div id="admin-sec-design" class="admin-section hidden space-y-4 bg-white dark:bg-slate-800 p-5 rounded-3xl border shadow-sm">
+                                    <h3 class="font-bold text-lg">Дизайн приложения</h3>
+                                    <div id="designButtonsContainer" class="grid grid-cols-2 gap-3">
+                                        <button type="button" data-design="blue" class="p-3 rounded-2xl border-2 border-blue-600 bg-blue-50 text-blue-800 font-bold text-xs">Синий (Классик)</button>
+                                        <button type="button" data-design="purple" class="p-3 rounded-2xl border-2 border-purple-600 bg-purple-50 text-purple-800 font-bold text-xs">Фиолетовый</button>
+                                    </div>
+                                </div>
+
+                                <!-- Раздел 3: Пользователи -->
+                                <div id="admin-sec-users" class="admin-section hidden space-y-4 bg-white dark:bg-slate-800 p-5 rounded-3xl border shadow-sm">
+                                    <h3 class="font-bold text-lg">Зарегистрированные пользователи</h3>
+                                    <div id="adminUsersContainer" class="space-y-3"></div>
+                                </div>
+
+                                <!-- Раздел 4: Безопасность (PIN) -->
+                                <div id="admin-sec-security" class="admin-section hidden space-y-4 bg-white dark:bg-slate-800 p-5 rounded-3xl border shadow-sm">
+                                    <h3 class="font-bold text-lg">Смена PIN-кода</h3>
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <input type="password" id="oldPinInput" placeholder="Старый PIN" class="px-3 py-2 rounded-xl border text-sm">
+                                        <input type="password" id="newPinInput" placeholder="Новый PIN" class="px-3 py-2 rounded-xl border text-sm">
+                                        <button type="button" id="changePinBtn" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-xl text-xs">Изменить PIN</button>
+                                    </div>
+                                </div>
+
+                                <!-- Раздел 5: Товары -->
+                                <div id="admin-sec-products" class="admin-section hidden space-y-4 bg-white dark:bg-slate-800 p-5 rounded-3xl border shadow-sm">
+                                    <h3 class="font-bold text-lg">Управление товарами</h3>
+                                    <form id="addProductForm" class="space-y-3">
+                                        <input type="hidden" id="editProductId" value="">
+                                        <input type="text" id="adminProdTitle" required placeholder="Название товара" class="w-full px-3 py-2.5 rounded-xl border text-sm">
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <input type="number" id="adminProdPricePickup" required placeholder="Цена самовывоз" class="px-3 py-2.5 rounded-xl border text-sm">
+                                            <input type="number" id="adminProdPriceDelivery" required placeholder="Цена с доставкой" class="px-3 py-2.5 rounded-xl border text-sm">
+                                        </div>
+                                        <button type="submit" id="saveProdBtn" class="w-full bg-purple-600 text-white font-bold py-2.5 rounded-xl text-sm">Сохранить товар</button>
+                                    </form>
+                                    <div id="adminProductsContainer" class="space-y-3 mt-4"></div>
+                                </div>
+
+                                <!-- Раздел 6: Бронирования -->
+                                <div id="admin-sec-orders" class="admin-section hidden space-y-4">
+                                    <h3 class="font-bold text-lg text-purple-900 dark:text-purple-300">Входящие бронирования</h3>
+                                    <div id="adminOrdersContainer" class="space-y-4"></div>
+                                </div>
+
+                            </div>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border shadow-sm space-y-4">
-                            <h3 class="font-bold text-lg">Список товаров</h3>
-                            <div id="adminProductsContainer" class="space-y-3"></div>
-                        </div>
-                        <div class="space-y-4">
-                            <h3 class="font-bold text-lg">Входящие бронирования</h3>
-                            <div id="adminOrdersContainer" class="space-y-4"></div>
-                        </div>
+
                     </div>
                 </section>
 
@@ -316,13 +404,11 @@
         var cart = [];
         var secretClickCount = 0;
         var isAdminAuthorized = false;
-        var currentUploadedImageData = '';
-        var currentLogoData = '';
 
         var defaultProducts = [
-            { id: 1, title: 'Молоко деревенское 1.5л', pricePickup: 120, priceDelivery: 150, desc: 'Свежее натуральное молоко.', icon: 'fa-bottle-droplet', bg: 'bg-blue-50', color: 'text-blue-600', status: 'in_stock', image: '' },
-            { id: 2, title: 'Сметана домашняя 0.5л', pricePickup: 180, priceDelivery: 210, desc: 'Густая натуральная сметана.', icon: 'fa-jar', bg: 'bg-amber-50', color: 'text-amber-600', status: 'in_stock', image: '' },
-            { id: 3, title: 'Творог деревенский 400г', pricePickup: 160, priceDelivery: 190, desc: 'Рассыпчатый и нежный творог.', icon: 'fa-cheese', bg: 'bg-emerald-50', color: 'text-emerald-600', status: 'in_stock', image: '' }
+            { id: 1, title: 'Молоко деревенское 1.5л', pricePickup: 120, priceDelivery: 150, desc: 'Свежее натуральное молоко.', icon: 'fa-bottle-droplet', status: 'in_stock' },
+            { id: 2, title: 'Сметана домашняя 0.5л', pricePickup: 180, priceDelivery: 210, desc: 'Густая натуральная сметана.', icon: 'fa-jar', status: 'in_stock' },
+            { id: 3, title: 'Творог деревенский 400г', pricePickup: 160, priceDelivery: 190, desc: 'Рассыпчатый и нежный творог.', icon: 'fa-cheese', status: 'in_stock' }
         ];
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -369,8 +455,6 @@
 
         function applySavedBrandSettings() {
             var brandName = localStorage.getItem('app_brand_name') || 'Макс Доставка';
-            var logo = localStorage.getItem('app_logo_data');
-
             var mbTitle = document.getElementById('mobileBrandTitle');
             var dkTitle = document.getElementById('desktopBrandTitle');
             var brandInput = document.getElementById('adminBrandNameInput');
@@ -378,13 +462,6 @@
             if (mbTitle) mbTitle.innerText = brandName;
             if (dkTitle) dkTitle.innerText = brandName;
             if (brandInput) brandInput.value = brandName;
-
-            if (logo) {
-                var mbLogo = document.getElementById('mobileLogoContainer');
-                var dkLogo = document.getElementById('desktopLogoContainer');
-                if (mbLogo) mbLogo.innerHTML = '<img src="' + logo + '" class="w-full h-full object-cover">';
-                if (dkLogo) dkLogo.innerHTML = '<img src="' + logo + '" class="w-full h-full object-cover">';
-            }
         }
 
         function initEventListeners() {
@@ -392,6 +469,14 @@
             for (var i = 0; i < navButtons.length; i++) {
                 navButtons[i].addEventListener('click', function() {
                     switchTab(this.getAttribute('data-tab'));
+                });
+            }
+
+            // Переключение вкладок в админке через боковое меню
+            var adminNavBtns = document.querySelectorAll('[data-admin-tab]');
+            for (var a = 0; a < adminNavBtns.length; a++) {
+                adminNavBtns[a].addEventListener('click', function() {
+                    switchAdminSection(this.getAttribute('data-admin-tab'));
                 });
             }
 
@@ -423,6 +508,12 @@
 
             var saveBrandSettingsBtn = document.getElementById('saveBrandSettingsBtn');
             if (saveBrandSettingsBtn) saveBrandSettingsBtn.addEventListener('click', saveBrandSettings);
+
+            var changePinBtn = document.getElementById('changePinBtn');
+            if (changePinBtn) changePinBtn.addEventListener('click', handleChangePin);
+
+            var addProductForm = document.getElementById('addProductForm');
+            if (addProductForm) addProductForm.addEventListener('submit', handleAddProductSubmit);
 
             var deliveryRadios = document.querySelectorAll('input[name="deliveryType"]');
             for (var r = 0; r < deliveryRadios.length; r++) {
@@ -457,6 +548,40 @@
                     }
                 });
             }
+
+            var resStreetSelect = document.getElementById('resStreetSelect');
+            if (resStreetSelect) {
+                resStreetSelect.addEventListener('change', function(e) {
+                    var customInput = document.getElementById('resStreetCustom');
+                    if (e.target.value === 'custom') {
+                        customInput.classList.remove('hidden');
+                        customInput.required = true;
+                    } else {
+                        customInput.classList.add('hidden');
+                        customInput.required = false;
+                    }
+                });
+            }
+        }
+
+        function switchAdminSection(sectionName) {
+            var sections = document.querySelectorAll('.admin-section');
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.add('hidden');
+            }
+            var target = document.getElementById('admin-sec-' + sectionName);
+            if (target) target.classList.remove('hidden');
+
+            var navBtns = document.querySelectorAll('.admin-nav-btn');
+            for (var j = 0; j < navBtns.length; j++) {
+                navBtns[j].classList.remove('bg-purple-50', 'text-purple-700', 'font-bold', 'dark:bg-purple-900/40', 'dark:text-purple-300');
+                navBtns[j].classList.add('text-slate-600', 'dark:text-slate-300');
+            }
+            var activeBtn = document.querySelector('[data-admin-tab="' + sectionName + '"]');
+            if (activeBtn) {
+                activeBtn.classList.add('bg-purple-50', 'text-purple-700', 'font-bold', 'dark:bg-purple-900/40', 'dark:text-purple-300');
+                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300');
+            }
         }
 
         function extractRealMaxUser() {
@@ -490,7 +615,6 @@
                 });
                 showToast('Успешный вход через MAX ID!');
             } else {
-                // Если объект MAX не передал пользователя, делаем мягкую имитацию входа для тестов или реального мессенджера
                 var savedData = JSON.parse(localStorage.getItem('max_real_user') || '{}');
                 loginUserToUI({
                     name: savedData.name || 'Пользователь MAX',
@@ -552,9 +676,31 @@
                 isAdminAuthorized = true;
                 document.getElementById('adminAuthLock').classList.add('hidden');
                 document.getElementById('adminMainContent').classList.remove('hidden');
+                renderAdminOrders();
+                renderAdminProductsList();
+                renderAdminUsersList();
+                showToast('Добро пожаловать в админку!');
             } else {
                 showToast('Неверный PIN!');
             }
+        }
+
+        function handleChangePin() {
+            var oldPin = document.getElementById('oldPinInput').value.trim();
+            var newPin = document.getElementById('newPinInput').value.trim();
+            var currentPin = localStorage.getItem('max_admin_pin') || '1234';
+
+            if (oldPin !== currentPin) {
+                return showToast('Старый PIN введен неверно!');
+            }
+            if (!newPin || newPin.length < 4) {
+                return showToast('Новый PIN должен быть от 4 символов!');
+            }
+
+            localStorage.setItem('max_admin_pin', newPin);
+            document.getElementById('oldPinInput').value = '';
+            document.getElementById('newPinInput').value = '';
+            showToast('PIN-код успешно изменен!');
         }
 
         function handleSecretAdminClick() {
@@ -570,7 +716,7 @@
             var name = document.getElementById('adminBrandNameInput').value.trim();
             if (name) localStorage.setItem('app_brand_name', name);
             applySavedBrandSettings();
-            showToast('Сохранено!');
+            showToast('Настройки бренда сохранены!');
         }
 
         function loadCatalog() {
@@ -593,6 +739,88 @@
                         '</div>' +
                         '<button type="button" data-action="add-to-cart" data-id="' + p.id + '" class="bg-blue-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold">В корзину</button>' +
                     '</div>' +
+                '</div>';
+            }
+        }
+
+        function renderAdminProductsList() {
+            var container = document.getElementById('adminProductsContainer');
+            if (!container) return;
+            var products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
+            container.innerHTML = '';
+            for (var i = 0; i < products.length; i++) {
+                var p = products[i];
+                container.innerHTML += '<div class="flex items-center justify-between bg-slate-50 dark:bg-slate-700/50 p-3 rounded-2xl border">' +
+                    '<div><h4 class="font-bold text-sm">' + p.title + '</h4><p class="text-xs text-slate-500">' + p.pricePickup + '₽ / ' + p.priceDelivery + '₽</p></div>' +
+                    '<button type="button" onclick="deleteProduct(' + p.id + ')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold">Удалить</button>' +
+                '</div>';
+            }
+        }
+
+        function handleAddProductSubmit(e) {
+            e.preventDefault();
+            var title = document.getElementById('adminProdTitle').value;
+            var pricePickup = Number(document.getElementById('adminProdPricePickup').value);
+            var priceDelivery = Number(document.getElementById('adminProdPriceDelivery').value);
+
+            var products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
+            products.push({
+                id: Date.now(),
+                title: title,
+                pricePickup: pricePickup,
+                priceDelivery: priceDelivery,
+                desc: 'Свежая продукция',
+                icon: 'fa-bottle-droplet',
+                status: 'in_stock'
+            });
+
+            localStorage.setItem('max_products', JSON.stringify(products));
+            loadCatalog();
+            renderAdminProductsList();
+            document.getElementById('addProductForm').reset();
+            showToast('Товар добавлен!');
+        }
+
+        function deleteProduct(id) {
+            var products = JSON.parse(localStorage.getItem('max_products')) || defaultProducts;
+            var newProd = [];
+            for (var i = 0; i < products.length; i++) {
+                if (products[i].id !== id) newProd.push(products[i]);
+            }
+            localStorage.setItem('max_products', JSON.stringify(newProd));
+            loadCatalog();
+            renderAdminProductsList();
+            showToast('Товар удален');
+        }
+
+        function renderAdminUsersList() {
+            var container = document.getElementById('adminUsersContainer');
+            if (!container) return;
+            var users = JSON.parse(localStorage.getItem('max_all_registered_users')) || [];
+            if (users.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-sm">Нет пользователей.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            for (var i = 0; i < users.length; i++) {
+                container.innerHTML += '<div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-2xl border text-xs"><p class="font-bold">' + users[i].name + '</p><p class="text-slate-500">Тел: ' + (users[i].phone || 'Не указан') + '</p></div>';
+            }
+        }
+
+        function renderAdminOrders() {
+            var container = document.getElementById('adminOrdersContainer');
+            if (!container) return;
+            var orders = JSON.parse(localStorage.getItem('max_all_orders')) || [];
+            if (orders.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-sm">Входящих бронирований нет.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            for (var i = orders.length - 1; i >= 0; i--) {
+                var o = orders[i];
+                container.innerHTML += '<div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border shadow-sm space-y-2 text-xs">' +
+                    '<div class="flex justify-between font-bold"><span>' + o.name + ' (' + o.phone + ')</span><span>' + o.total + ' ₽</span></div>' +
+                    '<p class="text-slate-500">Адрес: с. Бижбуляк / Барш, ' + o.street + ', ' + o.house + '</p>' +
                 '</div>';
             }
         }
@@ -662,6 +890,35 @@
         function handleReservationSubmit(e) {
             e.preventDefault();
             if (cart.length === 0) return showToast('Корзина пуста.');
+            
+            var name = document.getElementById('resName').value;
+            var phone = document.getElementById('resPhone').value;
+            var streetSelect = document.getElementById('resStreetSelect').value;
+            var street = streetSelect === 'custom' ? document.getElementById('resStreetCustom').value : streetSelect;
+            var house = document.getElementById('resHouse').value;
+            var deliveryType = document.querySelector('input[name="deliveryType"]:checked').value;
+            
+            var totalSum = 0;
+            var isDelivery = deliveryType === 'delivery';
+            for (var i = 0; i < cart.length; i++) {
+                totalSum += (isDelivery ? cart[i].priceDelivery : cart[i].pricePickup) * cart[i].qty;
+            }
+
+            var newOrder = {
+                id: Date.now(),
+                name: name,
+                phone: phone,
+                street: street,
+                house: house,
+                items: cart.slice(),
+                total: totalSum,
+                date: new Date().toLocaleString('ru-RU')
+            };
+
+            var orders = JSON.parse(localStorage.getItem('max_all_orders')) || [];
+            orders.push(newOrder);
+            localStorage.setItem('max_all_orders', JSON.stringify(orders));
+
             showToast('Бронь успешно оформлена!');
             cart = [];
             updateCartUI();
@@ -679,6 +936,12 @@
                 nav[j].classList.add('text-slate-600');
             }
             document.querySelector('[data-tab="' + tabId + '"]').classList.add('bg-blue-50', 'text-blue-600', 'font-semibold');
+
+            if (tabId === 'admin' && isAdminAuthorized) {
+                renderAdminOrders();
+                renderAdminProductsList();
+                renderAdminUsersList();
+            }
         }
     </script>
 </body>
